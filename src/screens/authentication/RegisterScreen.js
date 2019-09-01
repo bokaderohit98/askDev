@@ -1,13 +1,21 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { IconButton, TextInput, Button } from 'react-native-paper';
-import { View, Text } from 'react-native';
+import {
+    IconButton,
+    Button,
+    Snackbar,
+    Title,
+    Subheading
+} from 'react-native-paper';
+import { View } from 'react-native';
 import {
     Container,
     CloseContainer,
     FormContainer,
     Message,
-    renderFormGroup
+    renderFormGroup,
+    style
 } from './containers';
 
 class RegisterScreen extends Component {
@@ -41,6 +49,10 @@ class RegisterScreen extends Component {
                 email: '',
                 password: '',
                 repeatedPassword: ''
+            },
+            inputError: {
+                error: false,
+                message: 'Name is required'
             }
         };
     }
@@ -52,24 +64,78 @@ class RegisterScreen extends Component {
         this.setState({
             inputs: update
         });
+        this.handleFormValidation(update);
+    };
+
+    setInputErrorMessage = message => {
+        this.setState({
+            inputError: { message }
+        });
+    };
+
+    setInputError = () => {
+        const { inputError } = this.state;
+        const error = inputError.message !== '';
+        this.setState({
+            inputError: { ...inputError, error }
+        });
+        return error;
+    };
+
+    handleFormValidation = inputs => {
+        const { name, email, password, repeatedPassword } = inputs;
+
+        if (name === '') this.setInputErrorMessage('Name is required');
+        else if (name.length < 4) this.setInputErrorMessage('Name too short');
+        else if (email === '') this.setInputErrorMessage('Email is required');
+        else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
+            this.setInputErrorMessage('Invalid Email');
+        else if (password === '')
+            this.setInputErrorMessage('Password is required');
+        else if (password !== repeatedPassword)
+            this.setInputErrorMessage("Passwords don't match");
+        else this.setInputErrorMessage('');
+    };
+
+    handleFormSubmit = () => {
+        if (this.setInputError()) return;
+        console.log('Registering');
     };
 
     render() {
-        const { formGroup, inputs } = this.state;
+        const { formGroup, inputs, inputError } = this.state;
         return (
-            <Container>
-                <CloseContainer>
-                    <IconButton icon="close" />
-                </CloseContainer>
-                <FormContainer>
-                    {renderFormGroup(formGroup, inputs)}
-                    <Button mode="outlined">Sign up</Button>
-                    <Message>
-                        <Text>Already Registered? </Text>
-                        <Button>Login</Button>
-                    </Message>
-                </FormContainer>
-            </Container>
+            <>
+                <Container>
+                    <CloseContainer>
+                        <IconButton icon="close" />
+                    </CloseContainer>
+                    <FormContainer>
+                        {renderFormGroup(formGroup, inputs)}
+                        <Button mode="outlined" onPress={this.handleFormSubmit}>
+                            Sign up
+                        </Button>
+                        <Message>
+                            <Subheading>Already Registered?</Subheading>
+                            <Button>Login</Button>
+                        </Message>
+                    </FormContainer>
+                </Container>
+                <Snackbar
+                    visible={inputError.error}
+                    onDismiss={() =>
+                        this.setState({
+                            inputError: { ...inputError, error: false }
+                        })
+                    }
+                    style={style.Snackbar}
+                    duration={Snackbar.DURATION_LONG}
+                >
+                    <Subheading style={style.SnackbarText}>
+                        {inputError.message}
+                    </Subheading>
+                </Snackbar>
+            </>
         );
     }
 }
