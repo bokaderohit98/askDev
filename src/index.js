@@ -1,20 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
-import { View, Text } from 'react-native';
-
-const Conainer = styled.View`
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-`;
+import { createAppContainer } from 'react-navigation';
+import AuthenticationStack from './screens/authentication';
 
 const App = () => {
-    return (
-        <Conainer>
-            <Text>Hello Native!</Text>
-        </Conainer>
-    );
+    return <AuthenticationStack />;
 };
 
 export default App;
