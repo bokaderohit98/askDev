@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { View, Dimensions, StyleSheet, Keyboard } from 'react-native';
 import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
+import { connect } from 'react-redux';
 import Toast from '../../components/Toast';
-import axios from '../../constants/axios';
-import routes from '../../constants/routes';
+import axios from '../../utils/axios';
+import routes from '../../utils/routes';
+import { login, clearSuccess, clearError } from '../../redux/api';
 
 const Container = styled.View`
     display: flex;
@@ -144,10 +146,11 @@ class RegisterScreen extends Component {
 
     handleFormSubmit = () => {
         Keyboard.dismiss();
-        const { type } = this.state;
+        const { type, inputs } = this.state;
+        const { login } = this.props;
         if (this.setInputError()) return;
         if (type === 'register') this.handleRegisterUser();
-        else console.log('Logging in');
+        else login(inputs.email, inputs.password);
     };
 
     handleRegisterUser = () => {
@@ -219,48 +222,55 @@ class RegisterScreen extends Component {
 
     renderError = () => {
         const { inputError, registerUser } = this.state;
+        const { loginUser, clearError } = this.props;
         let message = '';
-        const error = inputError.error || registerUser.error;
+        const error = inputError.error || registerUser.error || loginUser.error;
         if (inputError.error) message = inputError.message;
         else if (registerUser.error) message = 'Invalid Details';
+        else if (loginUser.error) message = loginUser.message;
         return (
             <Toast
                 visible={error}
                 color="#CC0000"
                 message={message}
-                onDismiss={() =>
+                onDismiss={() => {
                     this.setState({
                         inputError: { ...inputError, error: false },
                         registerUser: { ...registerUser, error: false }
-                    })
-                }
+                    });
+                    clearError();
+                }}
             />
         );
     };
 
     renderSuccess = () => {
         const { registerUser } = this.state;
+        const { loginUser, clearSuccess } = this.props;
         let message = '';
-        const { success } = registerUser;
+        const success = registerUser.success || loginUser.success;
         if (registerUser.success)
             message = 'Registration successful! Logging in';
+        else if (loginUser.success) message = 'Successfully logged in';
         return (
             <Toast
                 visible={success}
                 color="#007E33"
                 message={message}
-                onDismiss={() =>
+                onDismiss={() => {
                     this.setState({
                         registerUser: { ...registerUser, success: false }
-                    })
-                }
+                    });
+                    clearSuccess();
+                }}
             />
         );
     };
 
     render() {
         const { type, registerUser } = this.state;
-        const disabled = registerUser.loading;
+        const { loginUser } = this.props;
+        const disabled = registerUser.loading || loginUser.loading;
         return (
             <>
                 <Container>
@@ -302,4 +312,16 @@ class RegisterScreen extends Component {
     }
 }
 
-export default RegisterScreen;
+const mapStateToProps = state => ({
+    loginUser: {
+        loading: state.loginLoading,
+        error: state.loginError,
+        message: state.loginErrorMessage,
+        success: state.loginSuccess
+    }
+});
+
+export default connect(
+    mapStateToProps,
+    { login, clearSuccess, clearError }
+)(RegisterScreen);
