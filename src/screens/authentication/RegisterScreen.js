@@ -1,21 +1,12 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
-import {
-    IconButton,
-    Button,
-    Snackbar,
-    Title,
-    Subheading
-} from 'react-native-paper';
-import { View } from 'react-native';
+import { IconButton, Button, Subheading } from 'react-native-paper';
+import Toast from '../../components/Toast';
 import {
     Container,
     CloseContainer,
     FormContainer,
     Message,
-    renderFormGroup,
-    style
+    renderFormGroup
 } from './containers';
 
 class RegisterScreen extends Component {
@@ -121,20 +112,16 @@ class RegisterScreen extends Component {
                         </Message>
                     </FormContainer>
                 </Container>
-                <Snackbar
+                <Toast
                     visible={inputError.error}
+                    color="#CC0000"
+                    message={inputError.message}
                     onDismiss={() =>
                         this.setState({
                             inputError: { ...inputError, error: false }
                         })
                     }
-                    style={style.Snackbar}
-                    duration={Snackbar.DURATION_LONG}
-                >
-                    <Subheading style={style.SnackbarText}>
-                        {inputError.message}
-                    </Subheading>
-                </Snackbar>
+                />
             </>
         );
     }

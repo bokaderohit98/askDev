@@ -38,17 +38,6 @@ const style = StyleSheet.create({
         maxWidth: 350,
         backgroundColor: '#ffffff',
         marginBottom: 18
-    },
-
-    Snackbar: {
-        backgroundColor: '#CC0000',
-        margin: 0,
-        height: 54
-    },
-
-    SnackbarText: {
-        color: '#ffffff',
-        textAlign: 'center'
     }
 });
 
