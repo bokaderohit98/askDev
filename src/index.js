@@ -1,9 +1,21 @@
-import React from 'react';
 import { createAppContainer } from 'react-navigation';
-import AuthenticationStack from './screens/authentication';
+import { createStackNavigator } from 'react-navigation-stack';
+import Authentication from './screens/authentication';
 
-const App = () => {
-    return <AuthenticationStack />;
-};
+const App = createStackNavigator(
+    {
+        Authentication: {
+            screen: Authentication
+        }
+    },
+    {
+        initialRouteName: 'Authentication',
+        defaultNavigationOptions: {
+            headerStyle: {
+                display: 'none'
+            }
+        }
+    }
+);
 
-export default App;
+export default createAppContainer(App);
