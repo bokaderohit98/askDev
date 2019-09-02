@@ -21,7 +21,7 @@ const Toast = ({ visible, message, color, onDismiss }) => {
             visible={visible}
             onDismiss={onDismiss}
             style={{ ...style.Snackbar, backgroundColor: color }}
-            duration={Snackbar.DURATION_LONG}
+            duration={Snackbar.DURATION_SHORT}
         >
             <Subheading style={style.SnackbarText}>{message}</Subheading>
         </Snackbar>

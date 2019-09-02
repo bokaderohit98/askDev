@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { View, Dimensions, StyleSheet } from 'react-native';
+import { View, Dimensions, StyleSheet, Keyboard } from 'react-native';
 import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import Toast from '../../components/Toast';
+import axios from '../../constants/axios';
+import routes from '../../constants/routes';
 
 const Container = styled.View`
     display: flex;
@@ -87,6 +89,11 @@ class RegisterScreen extends Component {
                     navigation.getParam('type', 'register') === 'register'
                         ? 'Name is required'
                         : 'Email is required'
+            },
+            registerUser: {
+                loading: false,
+                error: false,
+                result: null
             }
         };
     }
@@ -136,10 +143,42 @@ class RegisterScreen extends Component {
     };
 
     handleFormSubmit = () => {
-        const { type } = this.props;
+        Keyboard.dismiss();
+        const { type } = this.state;
         if (this.setInputError()) return;
-        if (type === 'register') console.log('Registering');
+        if (type === 'register') this.handleRegisterUser();
         else console.log('Logging in');
+    };
+
+    handleRegisterUser = () => {
+        const { registerUser, inputs } = this.state;
+        const { email, name, password, repeatedPassword: password2 } = inputs;
+        this.setState({ registerUser: { ...registerUser, loading: true } });
+        axios
+            .post(routes.register, {
+                email,
+                name,
+                password,
+                password2
+            })
+            .then(res => {
+                this.setState({
+                    registerUser: {
+                        ...registerUser,
+                        loading: false,
+                        success: true
+                    }
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    registerUser: {
+                        ...registerUser,
+                        loading: false,
+                        error: true
+                    }
+                });
+            });
     };
 
     handleSwitchNavigation = () => {
@@ -156,7 +195,7 @@ class RegisterScreen extends Component {
         });
     };
 
-    renderFormGroup = () => {
+    renderFormGroup = disabled => {
         const { formGroup, inputs, type } = this.state;
         const { width } = Dimensions.get('screen');
 
@@ -173,22 +212,73 @@ class RegisterScreen extends Component {
                 value={values[i]}
                 onChangeText={item.onChangeText}
                 style={{ ...style.Input, width: width - 20 }}
+                disabled={disabled}
             />
         ));
     };
 
+    renderError = () => {
+        const { inputError, registerUser } = this.state;
+        let message = '';
+        const error = inputError.error || registerUser.error;
+        if (inputError.error) message = inputError.message;
+        else if (registerUser.error) message = 'Invalid Details';
+        return (
+            <Toast
+                visible={error}
+                color="#CC0000"
+                message={message}
+                onDismiss={() =>
+                    this.setState({
+                        inputError: { ...inputError, error: false },
+                        registerUser: { ...registerUser, error: false }
+                    })
+                }
+            />
+        );
+    };
+
+    renderSuccess = () => {
+        const { registerUser } = this.state;
+        let message = '';
+        const { success } = registerUser;
+        if (registerUser.success)
+            message = 'Registration successful! Logging in';
+        return (
+            <Toast
+                visible={success}
+                color="#007E33"
+                message={message}
+                onDismiss={() =>
+                    this.setState({
+                        registerUser: { ...registerUser, success: false }
+                    })
+                }
+            />
+        );
+    };
+
     render() {
-        const { inputError, type } = this.state;
+        const { type, registerUser } = this.state;
+        const disabled = registerUser.loading;
         return (
             <>
                 <Container>
                     <CloseContainer>
-                        <IconButton icon="close" />
+                        <IconButton icon="close" disabled={disabled} />
                     </CloseContainer>
                     <FormContainer>
-                        {this.renderFormGroup()}
-                        <Button mode="outlined" onPress={this.handleFormSubmit}>
-                            {type === 'register' ? 'Sign Up' : 'Login'}
+                        {this.renderFormGroup(disabled)}
+                        <Button
+                            mode="outlined"
+                            onPress={this.handleFormSubmit}
+                            disabled={disabled}
+                        >
+                            {disabled
+                                ? 'Loading...'
+                                : type === 'register'
+                                ? 'Sign Up'
+                                : 'Login'}
                         </Button>
                         <Message>
                             <Subheading>
@@ -196,22 +286,17 @@ class RegisterScreen extends Component {
                                     ? 'Already Registered?'
                                     : 'Not a Member?'}
                             </Subheading>
-                            <Button onPress={this.handleSwitchNavigation}>
+                            <Button
+                                onPress={this.handleSwitchNavigation}
+                                disabled={disabled}
+                            >
                                 {type === 'register' ? 'Login' : 'Register'}
                             </Button>
                         </Message>
                     </FormContainer>
                 </Container>
-                <Toast
-                    visible={inputError.error}
-                    color="#CC0000"
-                    message={inputError.message}
-                    onDismiss={() =>
-                        this.setState({
-                            inputError: { ...inputError, error: false }
-                        })
-                    }
-                />
+                {this.renderError()}
+                {this.renderSuccess()}
             </>
         );
     }
