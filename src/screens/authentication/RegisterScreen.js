@@ -93,6 +93,11 @@ class RegisterScreen extends Component {
         console.log('Registering');
     };
 
+    navigateToLogin = () => {
+        const { navigation } = this.props;
+        navigation.navigate('Login');
+    };
+
     render() {
         const { formGroup, inputs, inputError } = this.state;
         return (
@@ -108,7 +113,9 @@ class RegisterScreen extends Component {
                         </Button>
                         <Message>
                             <Subheading>Already Registered?</Subheading>
-                            <Button>Login</Button>
+                            <Button onPress={this.navigateToLogin}>
+                                Login
+                            </Button>
                         </Message>
                     </FormContainer>
                 </Container>

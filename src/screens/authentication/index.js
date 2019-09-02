@@ -14,7 +14,7 @@ const AuthenticationStack = createStackNavigator(
         }
     },
     {
-        initialRouteName: 'Register',
+        initialRouteName: 'Login',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'
