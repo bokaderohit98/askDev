@@ -28,13 +28,13 @@ export const login = (email, password) => dispatch => {
         });
 };
 
-export const clearSuccess = dispatch => {
+export const clearSuccess = () => dispatch => {
     dispatch({
         type: actions.CLEAR_SUCCESS
     });
 };
 
-export const clearError = dispatch => {
+export const clearError = () => dispatch => {
     dispatch({
         type: actions.CLEAR_ERROR
     });
