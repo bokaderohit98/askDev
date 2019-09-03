@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, Dimensions, StyleSheet, Keyboard } from 'react-native';
+import {
+    View,
+    Dimensions,
+    StyleSheet,
+    Keyboard,
+    TouchableWithoutFeedback
+} from 'react-native';
 import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
@@ -275,38 +281,43 @@ class RegisterScreen extends Component {
         const disabled = registerUser.loading || loginUser.loading;
         return (
             <>
-                <Container>
-                    <CloseContainer>
-                        <IconButton icon="close" disabled={disabled} />
-                    </CloseContainer>
-                    <FormContainer>
-                        {this.renderFormGroup(disabled)}
-                        <Button
-                            mode="outlined"
-                            onPress={this.handleFormSubmit}
-                            disabled={disabled}
-                        >
-                            {disabled
-                                ? 'Loading...'
-                                : type === 'register'
-                                ? 'Sign Up'
-                                : 'Login'}
-                        </Button>
-                        <Message>
-                            <Subheading>
-                                {type === 'register'
-                                    ? 'Already Registered?'
-                                    : 'Not a Member?'}
-                            </Subheading>
+                <TouchableWithoutFeedback
+                    onPress={Keyboard.dismiss}
+                    accessible={false}
+                >
+                    <Container>
+                        <CloseContainer>
+                            <IconButton icon="close" disabled={disabled} />
+                        </CloseContainer>
+                        <FormContainer>
+                            {this.renderFormGroup(disabled)}
                             <Button
-                                onPress={this.handleSwitchNavigation}
+                                mode="outlined"
+                                onPress={this.handleFormSubmit}
                                 disabled={disabled}
                             >
-                                {type === 'register' ? 'Login' : 'Register'}
+                                {disabled
+                                    ? 'Loading...'
+                                    : type === 'register'
+                                    ? 'Sign Up'
+                                    : 'Login'}
                             </Button>
-                        </Message>
-                    </FormContainer>
-                </Container>
+                            <Message>
+                                <Subheading>
+                                    {type === 'register'
+                                        ? 'Already Registered?'
+                                        : 'Not a Member?'}
+                                </Subheading>
+                                <Button
+                                    onPress={this.handleSwitchNavigation}
+                                    disabled={disabled}
+                                >
+                                    {type === 'register' ? 'Login' : 'Register'}
+                                </Button>
+                            </Message>
+                        </FormContainer>
+                    </Container>
+                </TouchableWithoutFeedback>
                 {this.renderError()}
                 {/* {this.renderSuccess()} */}
             </>
