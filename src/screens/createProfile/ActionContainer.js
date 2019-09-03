@@ -52,7 +52,7 @@ class ActionContainer extends Component {
     };
 
     renderInputTab = multiline => {
-        const { activeTabIndex, tabs } = this.props;
+        const { activeTabIndex, tabs, handleInputChange } = this.props;
         const { placeholder, value } = tabs[activeTabIndex];
         return (
             <TextInput
@@ -62,6 +62,7 @@ class ActionContainer extends Component {
                 numberOfLines={multiline ? 10 : 1}
                 placeholder={placeholder}
                 value={value}
+                onChangeText={handleInputChange}
             />
         );
     };
@@ -71,7 +72,7 @@ class ActionContainer extends Component {
         return (
             <Container>
                 <Message>{tabs[activeTabIndex].message}</Message>
-                {this.renderInputTab()}
+                {this.renderTab()}
             </Container>
         );
     }

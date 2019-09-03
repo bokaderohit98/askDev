@@ -40,6 +40,13 @@ class CreateProfile extends Component {
         this.setState({ activeTabIndex, prevDisabled, nextDisabled });
     };
 
+    handleInputChange = value => {
+        const { tabs, activeTabIndex } = this.state;
+        const updated = [...tabs];
+        updated[activeTabIndex].value = value;
+        this.setState({ tabs: updated });
+    };
+
     render() {
         const { prevDisabled, nextDisabled, activeTabIndex, tabs } = this.state;
         return (
@@ -58,6 +65,7 @@ class CreateProfile extends Component {
                     <ActionContainer
                         activeTabIndex={activeTabIndex}
                         tabs={tabs}
+                        handleInputChange={this.handleInputChange}
                     />
                     <IconButton
                         disabled={nextDisabled}
