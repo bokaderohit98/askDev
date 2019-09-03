@@ -24,6 +24,7 @@
         "no-shadow": 0,
         "import/prefer-default-export": 0,
         "react/no-unused-state": 0,
-        "prefer-const": 0
+        "prefer-const": 0,
+        "react/no-array-index-key": 0
     }
 }

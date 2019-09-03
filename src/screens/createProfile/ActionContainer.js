@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { TextInput, Menu, Button } from 'react-native-paper';
+import { ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { TextInput, Menu, Button, Chip } from 'react-native-paper';
 import * as types from './tabTypes';
 
-const Container = styled.View`
+const Container = styled.ScrollView``;
+
+const MultiInputItemContainer = styled.View`
     display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
 `;
 
 const Message = styled.Text`
@@ -23,8 +26,11 @@ const style = StyleSheet.create({
         backgroundColor: '#ffffff',
         width: Dimensions.get('screen').width - 100
     },
-    MenuButton: {
+    SelectButton: {
         width: Dimensions.get('screen').width - 100
+    },
+    MultiIntputItem: {
+        margin: 4
     }
 });
 
@@ -47,6 +53,12 @@ class ActionContainer extends Component {
         const { handleInputChange } = this.props;
         handleInputChange(option);
         this.toggleProfessionMenu();
+    };
+
+    removeMultiInputItem = (items, index) => {
+        const updated = items.filter((item, i) => i !== index);
+        const { handleInputChange } = this.props;
+        handleInputChange(updated.join(' '));
     };
 
     renderTab = () => {
@@ -85,7 +97,7 @@ class ActionContainer extends Component {
                     <Button
                         mode="outlined"
                         onPress={this.toggleProfessionMenu}
-                        style={style.MenuButton}
+                        style={style.SelectButton}
                         uppercase={false}
                     >
                         {value.length > 0 ? value : 'Profession'}
@@ -98,7 +110,31 @@ class ActionContainer extends Component {
     };
 
     renderMultipleInputTab = () => {
-        return null;
+        const { activeTabIndex, tabs, handleInputChange } = this.props;
+        const { value, placeholder } = tabs[activeTabIndex];
+        const filteredSkills = value.split(' ').filter(skill => skill !== '');
+        const skills = filteredSkills.map((skill, index) => (
+            <Chip
+                key={skill + index}
+                mode="outlined"
+                onClose={() => this.removeMultiInputItem(filteredSkills, index)}
+                style={style.MultiIntputItem}
+            >
+                {skill}
+            </Chip>
+        ));
+        return (
+            <>
+                <MultiInputItemContainer>{skills}</MultiInputItemContainer>
+                <TextInput
+                    style={style.Input}
+                    mode="outlined"
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={handleInputChange}
+                />
+            </>
+        );
     };
 
     renderInputTab = multiline => {
