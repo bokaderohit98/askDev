@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, Menu, Button } from 'react-native-paper';
 import * as types from './tabTypes';
 
 const Container = styled.View`
@@ -22,10 +22,33 @@ const style = StyleSheet.create({
     Input: {
         backgroundColor: '#ffffff',
         width: Dimensions.get('screen').width - 100
+    },
+    MenuButton: {
+        width: Dimensions.get('screen').width - 100
     }
 });
 
 class ActionContainer extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showProfessionMenu: false
+        };
+    }
+
+    toggleProfessionMenu = () => {
+        const { showProfessionMenu } = this.state;
+        this.setState({
+            showProfessionMenu: !showProfessionMenu
+        });
+    };
+
+    handleOptionSelection = option => {
+        const { handleInputChange } = this.props;
+        handleInputChange(option);
+        this.toggleProfessionMenu();
+    };
+
     renderTab = () => {
         const { activeTabIndex, tabs } = this.props;
         const { type } = tabs[activeTabIndex];
@@ -44,7 +67,34 @@ class ActionContainer extends Component {
     };
 
     renderSelectTab = () => {
-        return null;
+        const { activeTabIndex, tabs, handleInputChange } = this.props;
+        const { showProfessionMenu } = this.state;
+        const { options, value } = tabs[activeTabIndex];
+        const menuItems = options.map(option => (
+            <Menu.Item
+                key={option}
+                onPress={() => this.handleOptionSelection(option)}
+                title={option}
+            />
+        ));
+        return (
+            <Menu
+                visible={showProfessionMenu}
+                onDismiss={this.toggleProfessionMenu}
+                anchor={
+                    <Button
+                        mode="outlined"
+                        onPress={this.toggleProfessionMenu}
+                        style={style.MenuButton}
+                        uppercase={false}
+                    >
+                        {value.length > 0 ? value : 'Profession'}
+                    </Button>
+                }
+            >
+                {menuItems}
+            </Menu>
+        );
     };
 
     renderMultipleInputTab = () => {

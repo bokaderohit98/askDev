@@ -22,6 +22,16 @@ export default [
         name: 'profession',
         required: true,
         message: 'What do you do for a living?',
+        options: [
+            'Developer',
+            'Junior Develper',
+            'Senior Develper',
+            'Manager',
+            'Student',
+            'Instructor',
+            'Intern',
+            'Other'
+        ],
         value: '',
         type: types.SELECT
     },
@@ -53,7 +63,7 @@ export default [
         label: 'Github Username',
         name: 'githubusername',
         required: false,
-        message: 'Show others the great work you have done.',
+        message: 'Show others the great works you have done.',
         value: '',
         type: types.INPUT
     },
@@ -61,7 +71,7 @@ export default [
         lable: 'Bio',
         name: 'bio',
         required: false,
-        message: "I'm sure you have more to tell us!",
+        message: 'We are sure you have more to tell us!',
         type: types.MULTILINE_INPUT
     }
 ];
