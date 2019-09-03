@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import Toast from '../../components/Toast';
-import axios from '../../utils/axios';
-import routes from '../../utils/routes';
-import { login, clearSuccess, clearError } from '../../redux/api';
+import { clearSuccess, clearError } from '../../redux/api';
+import { axios, routes } from '../../utils';
+import AuthService from '../../utils/authService';
 
 const Container = styled.View`
     display: flex;
@@ -98,6 +98,7 @@ class RegisterScreen extends Component {
                 result: null
             }
         };
+        this.authService = new AuthService();
     }
 
     handleInputChange = (field, value) => {
@@ -147,10 +148,9 @@ class RegisterScreen extends Component {
     handleFormSubmit = () => {
         Keyboard.dismiss();
         const { type, inputs } = this.state;
-        const { login } = this.props;
         if (this.setInputError()) return;
         if (type === 'register') this.handleRegisterUser();
-        else login(inputs.email, inputs.password);
+        else this.authService.login(inputs.email, inputs.password);
     };
 
     handleRegisterUser = () => {
@@ -323,5 +323,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { login, clearSuccess, clearError }
+    { clearSuccess, clearError }
 )(RegisterScreen);

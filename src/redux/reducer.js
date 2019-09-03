@@ -15,7 +15,9 @@ const reducer = (state = {}, { type, payload }) => {
                 ...state,
                 loginLoading: false,
                 loginSuccess: true,
-                user: payload.user
+                loginError: false,
+                user: payload.user,
+                isAuthenticated: true
             };
         case actions.LOGIN_USER_ERROR:
             return {
@@ -28,6 +30,11 @@ const reducer = (state = {}, { type, payload }) => {
             return { ...state, loginSuccess: false };
         case actions.CLEAR_ERROR:
             return { ...state, loginError: false };
+        case actions.LOGOUT:
+            return {
+                user: null,
+                isAuthenticated: false
+            };
         default:
             return state;
     }

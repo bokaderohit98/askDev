@@ -1,22 +1,28 @@
 import jwtDecode from 'jwt-decode';
+import { AsyncStorage } from 'react-native';
 import * as actions from './actions';
 import axios from '../utils/axios';
 import routes from '../utils/routes';
 
-export const login = (email, password) => dispatch => {
+export const login = (email, password, authService) => dispatch => {
     dispatch({ type: actions.LOGIN_USER_BEGIN });
-    return axios
+    axios
         .post(routes.login, {
             email,
             password
         })
-        .then(res => {
+        .then(async res => {
+            const jwt = res.data.token.split(' ')[1];
             dispatch({
                 type: actions.LOGIN_USER_SUCCESS,
                 payload: {
-                    user: jwtDecode(res.data.token.split(' ')[1])
+                    user: jwtDecode(jwt)
                 }
             });
+            console.log('service', authService);
+            console.log('service name', authService.name);
+            authService.init(email, password, jwt);
+            authService.logger();
         })
         .catch(err => {
             dispatch({
