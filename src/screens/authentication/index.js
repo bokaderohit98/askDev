@@ -5,7 +5,8 @@ import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import Toast from '../../components/Toast';
 import { clearSuccess, clearError } from '../../redux/api';
-import { axios, routes } from '../../utils';
+import axios from '../../utils/axios';
+import routes from '../../utils/routes';
 import AuthService from '../../utils/authService';
 
 const Container = styled.View`
@@ -172,6 +173,7 @@ class RegisterScreen extends Component {
                         success: true
                     }
                 });
+                this.authService.login(email, password);
             })
             .catch(err => {
                 this.setState({
@@ -306,7 +308,7 @@ class RegisterScreen extends Component {
                     </FormContainer>
                 </Container>
                 {this.renderError()}
-                {this.renderSuccess()}
+                {/* {this.renderSuccess()} */}
             </>
         );
     }

@@ -19,8 +19,6 @@ export const login = (email, password, authService) => dispatch => {
                     user: jwtDecode(jwt)
                 }
             });
-            console.log('service', authService);
-            console.log('service name', authService.name);
             authService.init(email, password, jwt);
             authService.logger();
         })
