@@ -1,17 +1,24 @@
 import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
-import Home from './Home';
+import Feed from './Feed';
+import Developers from './Developers';
+import Drawer from './Drawer';
 
 const Main = createDrawerNavigator(
     {
-        Home: {
-            screen: Home
+        Feed: {
+            screen: Feed
+        },
+        Developers: {
+            screen: Developers
         }
     },
     {
+        initialRouteName: 'Feed',
         drawerWidth: 300,
         drawerType: 'slide',
-        edgeWidth: 20
+        edgeWidth: 20,
+        contentComponent: Drawer
     }
 );
 

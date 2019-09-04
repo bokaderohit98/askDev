@@ -9,14 +9,14 @@ const Container = styled.View`
     align-items: center;
 `;
 
-class Home extends Component {
+class Feed extends Component {
     render() {
         return (
             <Container>
-                <Text>Home</Text>
+                <Text>feed</Text>
             </Container>
         );
     }
 }
 
-export default Home;
+export default Feed;
