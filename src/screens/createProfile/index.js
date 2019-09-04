@@ -6,6 +6,9 @@ import tabsSchema from './tabsSchema';
 import tabValidations from './tabValidations';
 import ActionContainer from './ActionContainer';
 import Toast from '../../components/Toast';
+import AuthService from '../../utils/authService';
+import axios from '../../utils/axios';
+import routes from '../../utils/routes';
 
 const Container = styled.View`
     display: flex;
@@ -34,6 +37,7 @@ const Message = styled.Text`
 class CreateProfile extends Component {
     constructor(props) {
         super(props);
+        this.authService = new AuthService();
         this.state = {
             activeTabIndex: -1,
             tabs: tabsSchema,
@@ -42,6 +46,11 @@ class CreateProfile extends Component {
             tabValidation: {
                 error: false,
                 message: ''
+            },
+            saveProfile: {
+                loading: false,
+                error: false,
+                message: false
             }
         };
     }
@@ -105,6 +114,47 @@ class CreateProfile extends Component {
         return !correct;
     };
 
+    saveProfile = () => {
+        const { saveProfile, tabs } = this.state;
+        this.setState({ saveProfile: { ...saveProfile, loading: true } });
+        const requestData = tabs.reduce((data, item) => {
+            const { name, value } = item;
+            const updated = { ...data };
+            updated[name] = value;
+            return updated;
+        }, {});
+        this.authService
+            .validateToken()
+            .then(() => {
+                return this.authService.getToken();
+            })
+            .then(jwt => {
+                return axios.post(routes.profile, requestData, {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                });
+            })
+            .then(res => {
+                this.setState({
+                    saveProfile: {
+                        ...saveProfile,
+                        loading: false
+                    }
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    saveProfile: {
+                        ...saveProfile,
+                        loading: false,
+                        error: true,
+                        message: 'Some error occurred'
+                    }
+                });
+            });
+    };
+
     renderInitTab = () => {
         return (
             <TabContainer>
@@ -117,7 +167,7 @@ class CreateProfile extends Component {
         return (
             <TabContainer>
                 <Message>Let&apos; save your profile!</Message>
-                <Button mode="outlined" onPress={() => console.log('saved')}>
+                <Button mode="outlined" onPress={this.saveProfile}>
                     Save Profile
                 </Button>
             </TabContainer>
@@ -125,8 +175,21 @@ class CreateProfile extends Component {
     };
 
     renderError = () => {
-        const { tabValidation } = this.state;
-        const { error, message } = tabValidation;
+        const { tabValidation, saveProfile } = this.state;
+        const {
+            error: validationError,
+            message: validationErrorMessage
+        } = tabValidation;
+        const {
+            error: saveProfileError,
+            message: saveProfileErrorMessage
+        } = saveProfile;
+        const error = validationError || saveProfileError;
+        let message = '';
+
+        if (validationError) message = validationErrorMessage;
+        else if (saveProfileError) message = saveProfileErrorMessage;
+
         return (
             <Toast
                 visible={error}

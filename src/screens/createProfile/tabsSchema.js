@@ -19,7 +19,7 @@ export default [
     },
     {
         label: 'Profession',
-        name: 'profession',
+        name: 'status',
         required: true,
         message: 'What do you do for a living?',
         options: [
@@ -72,6 +72,7 @@ export default [
         name: 'bio',
         required: false,
         message: 'We are sure you have more to tell us!',
+        value: '',
         type: types.MULTILINE_INPUT
     }
 ];

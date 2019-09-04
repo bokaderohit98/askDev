@@ -16,10 +16,12 @@ class AuthService {
     };
 
     validateToken = async () => {
-        const jwt = this.getToken();
+        const jwt = await this.getToken();
         const user = jwtDecode(jwt);
         const expiryTime = user.exp * 1000;
-        if (expiryTime - 10 ** 5 < new Date().valueOf()) this.refreshToken();
+        if (expiryTime - 10 ** 5 < new Date().valueOf())
+            return this.refreshToken();
+        return Promise.resolve();
     };
 
     refreshToken = async () => {
