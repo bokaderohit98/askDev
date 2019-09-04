@@ -108,6 +108,12 @@ class RegisterScreen extends Component {
         this.authService = new AuthService();
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props && props.loginUser && props.loginUser.success)
+            props.navigation.navigate('CreateProfile');
+        return state;
+    }
+
     handleInputChange = (field, value) => {
         const { inputs } = this.state;
         const update = { ...inputs };

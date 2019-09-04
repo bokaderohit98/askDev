@@ -13,7 +13,7 @@ const App = createStackNavigator(
         }
     },
     {
-        initialRouteName: 'CreateProfile',
+        initialRouteName: 'Authentication',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'

@@ -127,7 +127,6 @@ class CreateProfile extends Component {
     renderError = () => {
         const { tabValidation } = this.state;
         const { error, message } = tabValidation;
-        console.log(tabValidation);
         return (
             <Toast
                 visible={error}
