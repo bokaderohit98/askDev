@@ -1,7 +1,11 @@
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { DrawerActions } from 'react-navigation-drawer';
+import { IconButton } from 'react-native-paper';
+import React from 'react';
 import Authentication from './screens/authentication';
 import CreateProfile from './screens/createProfile';
+import Main from './screens/main';
 
 const App = createStackNavigator(
     {
@@ -10,10 +14,19 @@ const App = createStackNavigator(
         },
         CreateProfile: {
             screen: CreateProfile
+        },
+        Main: {
+            screen: Main,
+            navigationOptions: {
+                headerStyle: {
+                    display: 'flex',
+                    backgroundColor: '#673ab7'
+                }
+            }
         }
     },
     {
-        initialRouteName: 'Authentication',
+        initialRouteName: 'Main',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'
