@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, TouchableWithoutFeedback, Keyboard, Text } from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { IconButton, Button } from 'react-native-paper';
 import styled from 'styled-components';
 import tabsSchema from './tabsSchema';
+import tabValidations from './tabValidations';
 import ActionContainer from './ActionContainer';
+import Toast from '../../components/Toast';
 
 const Container = styled.View`
     display: flex;
@@ -15,7 +17,7 @@ const Container = styled.View`
     margin-bottom: 40px;
 `;
 
-const SaveContainer = styled.View`
+const TabContainer = styled.View`
     display: flex;
     flex: 1;
     justify-content: center;
@@ -33,23 +35,27 @@ class CreateProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTabIndex: 0,
+            activeTabIndex: -1,
             tabs: tabsSchema,
             nextDisabled: false,
-            prevDisabled: true
+            prevDisabled: true,
+            tabValidation: {
+                error: false,
+                message: ''
+            }
         };
     }
 
-    componentDidMount() {
-        const { tabs } = this.state;
-        const { required, value } = tabs[0];
-        if (required && value === '') this.setState({ nextDisabled: true });
-    }
-
     handleTabSwitch = event => {
+        Keyboard.dismiss();
+
+        const error = this.validateCurrentTab();
+        if (error) return;
+
         let { activeTabIndex, tabs } = this.state;
         let nextDisabled = false;
         let prevDisabled = false;
+
         if (event === 'prev') {
             activeTabIndex -= 1;
             if (activeTabIndex === 0) prevDisabled = true;
@@ -59,6 +65,7 @@ class CreateProfile extends Component {
                 const { required, value } = tabs[activeTabIndex];
                 if (required && value === '') nextDisabled = true;
             }
+            if (activeTabIndex === 0) prevDisabled = true;
         }
         this.setState({ activeTabIndex, prevDisabled, nextDisabled });
     };
@@ -71,14 +78,63 @@ class CreateProfile extends Component {
         this.setState({ tabs: updated, nextDisabled });
     };
 
+    clearErrors = () => {
+        this.setState({
+            tabValidation: {
+                error: false,
+                message: ''
+            }
+        });
+    };
+
+    validateCurrentTab = () => {
+        const { activeTabIndex, tabs } = this.state;
+
+        if (activeTabIndex === tabs.length || activeTabIndex === -1)
+            return false;
+
+        const { correct, errorMessage } = tabValidations[activeTabIndex](
+            tabs[activeTabIndex].value
+        );
+        this.setState({
+            tabValidation: {
+                error: !correct,
+                message: errorMessage
+            }
+        });
+        return !correct;
+    };
+
+    renderInitTab = () => {
+        return (
+            <TabContainer>
+                <Message>Let&apos; create your awesome profile!</Message>
+            </TabContainer>
+        );
+    };
+
     renderSaveTab = () => {
         return (
-            <SaveContainer>
-                <Message>Let's save your profile!</Message>
+            <TabContainer>
+                <Message>Let&apos; save your profile!</Message>
                 <Button mode="outlined" onPress={() => console.log('saved')}>
                     Save Profile
                 </Button>
-            </SaveContainer>
+            </TabContainer>
+        );
+    };
+
+    renderError = () => {
+        const { tabValidation } = this.state;
+        const { error, message } = tabValidation;
+        console.log(tabValidation);
+        return (
+            <Toast
+                visible={error}
+                color="#CC0000"
+                message={message}
+                onDismiss={this.clearErrors}
+            />
         );
     };
 
@@ -89,21 +145,27 @@ class CreateProfile extends Component {
                 onPress={Keyboard.dismiss}
                 pressable={false}
             >
-                <Container>
-                    <IconButton
-                        disabled={prevDisabled}
-                        icon="keyboard-arrow-left"
-                        size={32}
-                        color="#6a1b9a"
-                        onPress={() => this.handleTabSwitch('prev')}
-                    />
-                    {activeTabIndex < tabs.length && (
-                        <>
-                            <ActionContainer
-                                activeTabIndex={activeTabIndex}
-                                tabs={tabs}
-                                handleInputChange={this.handleInputChange}
+                <>
+                    <Container>
+                        {activeTabIndex > -1 && (
+                            <IconButton
+                                disabled={prevDisabled}
+                                icon="keyboard-arrow-left"
+                                size={32}
+                                color="#6a1b9a"
+                                onPress={() => this.handleTabSwitch('prev')}
                             />
+                        )}
+                        {activeTabIndex === -1 && this.renderInitTab()}
+                        {activeTabIndex < tabs.length &&
+                            activeTabIndex > -1 && (
+                                <ActionContainer
+                                    activeTabIndex={activeTabIndex}
+                                    tabs={tabs}
+                                    handleInputChange={this.handleInputChange}
+                                />
+                            )}
+                        {activeTabIndex < tabs.length && (
                             <IconButton
                                 disabled={nextDisabled}
                                 icon="keyboard-arrow-right"
@@ -111,10 +173,11 @@ class CreateProfile extends Component {
                                 color="#6a1b9a"
                                 onPress={() => this.handleTabSwitch('next')}
                             />
-                        </>
-                    )}
-                    {activeTabIndex === tabs.length && this.renderSaveTab()}
-                </Container>
+                        )}
+                        {activeTabIndex === tabs.length && this.renderSaveTab()}
+                    </Container>
+                    {this.renderError()}
+                </>
             </TouchableWithoutFeedback>
         );
     }
