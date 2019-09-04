@@ -1,10 +1,9 @@
 import jwtDecode from 'jwt-decode';
-import { AsyncStorage } from 'react-native';
 import * as actions from './actions';
 import axios from '../utils/axios';
 import routes from '../utils/routes';
 
-export const login = (email, password, authService) => dispatch => {
+export const login = (email, password, authService, callback) => dispatch => {
     dispatch({ type: actions.LOGIN_USER_BEGIN });
     axios
         .post(routes.login, {
@@ -21,15 +20,35 @@ export const login = (email, password, authService) => dispatch => {
             });
             authService.init(email, password, jwt);
             authService.logger();
+            return jwt;
+        })
+        .then(jwt => {
+            return axios.get(routes.profile, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            });
+        })
+        .then(res => {
+            dispatch({
+                type: actions.FETCH_PROFILE_SUCCESS,
+                payload: {
+                    profile: res.data
+                }
+            });
         })
         .catch(err => {
             dispatch({
-                type: actions.LOGIN_USER_ERROR,
-                payload: {
-                    error: 'Invalid Credentials'
-                }
+                type: actions.LOGIN_USER_ERROR
             });
         });
+};
+
+export const setProfile = profile => dispatch => {
+    dispatch({
+        type: actions.SET_PROFILE,
+        payload: profile
+    });
 };
 
 export const clearSuccess = () => dispatch => {

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { IconButton, Button } from 'react-native-paper';
 import styled from 'styled-components';
@@ -9,6 +10,7 @@ import Toast from '../../components/Toast';
 import AuthService from '../../utils/authService';
 import axios from '../../utils/axios';
 import routes from '../../utils/routes';
+import { setProfile } from '../../redux/api';
 
 const Container = styled.View`
     display: flex;
@@ -136,6 +138,8 @@ class CreateProfile extends Component {
                 });
             })
             .then(res => {
+                const { setProfile } = this.props;
+                setProfile(res.data);
                 this.setState({
                     saveProfile: {
                         ...saveProfile,
@@ -164,10 +168,16 @@ class CreateProfile extends Component {
     };
 
     renderSaveTab = () => {
+        const { saveProfile } = this.state;
         return (
             <TabContainer>
                 <Message>Let&apos; save your profile!</Message>
-                <Button mode="outlined" onPress={this.saveProfile}>
+                <Button
+                    mode="outlined"
+                    onPress={this.saveProfile}
+                    disabled={saveProfile.disabled}
+                    loading={saveProfile.loading}
+                >
                     Save Profile
                 </Button>
             </TabContainer>
@@ -201,7 +211,13 @@ class CreateProfile extends Component {
     };
 
     render() {
-        const { prevDisabled, nextDisabled, activeTabIndex, tabs } = this.state;
+        const {
+            prevDisabled,
+            nextDisabled,
+            activeTabIndex,
+            tabs,
+            saveProfile
+        } = this.state;
         return (
             <TouchableWithoutFeedback
                 onPress={Keyboard.dismiss}
@@ -211,7 +227,7 @@ class CreateProfile extends Component {
                     <Container>
                         {activeTabIndex > -1 && (
                             <IconButton
-                                disabled={prevDisabled}
+                                disabled={prevDisabled || saveProfile.loading}
                                 icon="keyboard-arrow-left"
                                 size={32}
                                 color="#6a1b9a"
@@ -245,4 +261,11 @@ class CreateProfile extends Component {
     }
 }
 
-export default CreateProfile;
+const mapStateToProps = state => {
+    return {};
+};
+
+export default connect(
+    mapStateToProps,
+    { setProfile }
+)(CreateProfile);

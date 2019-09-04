@@ -13,8 +13,6 @@ const reducer = (state = {}, { type, payload }) => {
         case actions.LOGIN_USER_SUCCESS:
             return {
                 ...state,
-                loginLoading: false,
-                loginSuccess: true,
                 loginError: false,
                 user: payload.user,
                 isAuthenticated: true
@@ -23,17 +21,29 @@ const reducer = (state = {}, { type, payload }) => {
             return {
                 ...state,
                 loginLoading: false,
-                loginError: true,
-                loginErrorMessage: payload.error
+                loginError: true
+            };
+        case actions.FETCH_PROFILE_SUCCESS:
+            return {
+                ...state,
+                loginLoading: false,
+                profile: payload.profile,
+                loginError: false
+            };
+        case actions.SET_PROFILE:
+            return {
+                ...state,
+                profile: payload.profile
             };
         case actions.CLEAR_SUCCESS:
-            return { ...state, loginSuccess: false };
+            return { ...state };
         case actions.CLEAR_ERROR:
             return { ...state, loginError: false };
         case actions.LOGOUT:
             return {
                 user: null,
-                isAuthenticated: false
+                isAuthenticated: false,
+                profile: null
             };
         default:
             return state;

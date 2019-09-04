@@ -109,7 +109,19 @@ class RegisterScreen extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (props && props.loginUser && props.loginUser.success)
+        if (
+            props &&
+            props.loginUser &&
+            props.loginUser.isAuthenticated &&
+            !props.loginUser.error
+        )
+            console.log('Redirect to home');
+        else if (
+            props &&
+            props.loginUser &&
+            props.loginUser.isAuthenticated &&
+            props.loginUser.error
+        )
             props.navigation.navigate('CreateProfile');
         return state;
     }
@@ -238,10 +250,14 @@ class RegisterScreen extends Component {
         const { inputError, registerUser } = this.state;
         const { loginUser, clearError } = this.props;
         let message = '';
-        const error = inputError.error || registerUser.error || loginUser.error;
+        const error =
+            inputError.error ||
+            registerUser.error ||
+            (loginUser.error && !loginUser.isAuthenticated);
         if (inputError.error) message = inputError.message;
         else if (registerUser.error) message = 'Invalid Details';
-        else if (loginUser.error) message = loginUser.message;
+        else if (loginUser.error && !loginUser.isAuthenticated)
+            message = loginUser.message;
         return (
             <Toast
                 visible={error}
@@ -301,12 +317,9 @@ class RegisterScreen extends Component {
                                 mode="outlined"
                                 onPress={this.handleFormSubmit}
                                 disabled={disabled}
+                                loading={disabled}
                             >
-                                {disabled
-                                    ? 'Loading...'
-                                    : type === 'register'
-                                    ? 'Sign Up'
-                                    : 'Login'}
+                                {type === 'register' ? 'Sign Up' : 'Login'}
                             </Button>
                             <Message>
                                 <Subheading>
@@ -335,8 +348,8 @@ const mapStateToProps = state => ({
     loginUser: {
         loading: state.loginLoading,
         error: state.loginError,
-        message: state.loginErrorMessage,
-        success: state.loginSuccess
+        message: 'Invalid Credentials',
+        isAuthenticated: state.isAuthenticated
     }
 });
 
