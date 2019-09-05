@@ -2,6 +2,7 @@ import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import Feed from './Feed';
 import Developers from './Developers';
+import Profile from './Profile';
 import Drawer from './Drawer';
 
 const Main = createDrawerNavigator(
@@ -11,10 +12,13 @@ const Main = createDrawerNavigator(
         },
         Developers: {
             screen: Developers
+        },
+        Profile: {
+            screen: Profile
         }
     },
     {
-        initialRouteName: 'Feed',
+        initialRouteName: 'Profile',
         drawerWidth: 300,
         drawerType: 'slide',
         edgeWidth: 20,
