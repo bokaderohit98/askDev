@@ -3,7 +3,7 @@ import * as actions from './actions';
 import axios from '../utils/axios';
 import routes from '../utils/routes';
 
-export const login = (email, password, authService, callback) => dispatch => {
+export const login = (email, password, authService) => dispatch => {
     dispatch({ type: actions.LOGIN_USER_BEGIN });
     axios
         .post(routes.login, {
@@ -40,6 +40,28 @@ export const login = (email, password, authService, callback) => dispatch => {
         .catch(err => {
             dispatch({
                 type: actions.LOGIN_USER_ERROR
+            });
+        });
+};
+
+export const fetchDevelopers = () => dispatch => {
+    dispatch({ type: actions.FETCH_DEVELOPERS_BEGIN });
+    axios
+        .get(routes.fetchDevelopers)
+        .then(res => {
+            dispatch({
+                type: actions.FETCH_DEVELOPERS_SUCCESS,
+                payload: {
+                    developers: res.data
+                }
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: actions.FETCH_DEVELOPERS_ERROR,
+                payload: {
+                    message: 'Unable to fetch Developers'
+                }
             });
         });
 };

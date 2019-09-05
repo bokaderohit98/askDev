@@ -30,6 +30,26 @@ const reducer = (state = {}, { type, payload }) => {
                 profile: payload.profile,
                 loginError: false
             };
+        case actions.FETCH_DEVELOPERS_BEGIN:
+            return {
+                ...state,
+                developersLoading: true,
+                developers: [],
+                developersError: false
+            };
+        case actions.FETCH_DEVELOPERS_SUCCESS:
+            return {
+                ...state,
+                developersLoading: false,
+                developers: payload.developers
+            };
+        case actions.FETCH_DEVELOPERS_ERROR:
+            return {
+                ...state,
+                developersLoading: false,
+                developersError: true,
+                developersErrorMessage: payload.message
+            };
         case actions.SET_PROFILE:
             return {
                 ...state,
