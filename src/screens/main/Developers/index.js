@@ -72,7 +72,7 @@ class Developers extends Component {
         const { developers, profile } = this.state;
         const { navigation } = this.props;
         const developerProfile = developers.find(developer => developer._id === _id);
-        navigation.navigate('Profile', { profile: developerProfile, isCurrentUser: profile._id === _id });
+        navigation.navigate('Profile', { profile: developerProfile, isCurrentUser: profile && profile._id === _id });
     };
 
     renderDeveloperSkills = skills => {
@@ -123,7 +123,7 @@ class Developers extends Component {
                 {loading && <Loading />}
                 {!loading && error && <Error />}
                 {!loading && !error && developers && developers.length === 0 && <Empty>No Developers Present!</Empty>}
-                {!loading && !error && developers && developers.length > 0 && profile && (
+                {!loading && !error && developers && developers.length > 0 && (
                     <MainContainer>{this.renderDevelopers()}</MainContainer>
                 )}
             </Container>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { ScrollView, StyleSheet } from 'react-native';
 import { DataTable, Avatar, Paragraph } from 'react-native-paper';
+import { Empty } from '../../../components';
 
 const Container = styled.ScrollView`
     display: flex;
@@ -65,41 +66,19 @@ class Specific extends Component {
             <ItemContainer key={item._id}>
                 <DataTable>
                     <TableRow>
-                        <Avatar.Icon
-                            icon={isEducation ? 'school' : 'work'}
-                            style={styles.RowItem}
-                            size={24}
-                        />
-                        <DataTable.Cell>
-                            {isEducation ? item.school : item.title}
-                        </DataTable.Cell>
+                        <Avatar.Icon icon={isEducation ? 'school' : 'work'} style={styles.RowItem} size={24} />
+                        <DataTable.Cell>{isEducation ? item.school : item.title}</DataTable.Cell>
                     </TableRow>
                     <TableRow>
-                        <Avatar.Icon
-                            icon={isEducation ? 'details' : 'business'}
-                            style={styles.RowItem}
-                            size={24}
-                        />
-                        <DataTable.Cell>
-                            {isEducation ? item.degree : item.company}
-                        </DataTable.Cell>
+                        <Avatar.Icon icon={isEducation ? 'details' : 'business'} style={styles.RowItem} size={24} />
+                        <DataTable.Cell>{isEducation ? item.degree : item.company}</DataTable.Cell>
                     </TableRow>
                     <TableRow>
-                        <Avatar.Icon
-                            icon={isEducation ? 'computer' : 'map'}
-                            style={styles.RowItem}
-                            size={24}
-                        />
-                        <DataTable.Cell>
-                            {isEducation ? item.fieldofstudy : item.location}
-                        </DataTable.Cell>
+                        <Avatar.Icon icon={isEducation ? 'computer' : 'map'} style={styles.RowItem} size={24} />
+                        <DataTable.Cell>{isEducation ? item.fieldofstudy : item.location}</DataTable.Cell>
                     </TableRow>
                     <TableRow>
-                        <Avatar.Icon
-                            icon="event"
-                            style={styles.RowItem}
-                            size={24}
-                        />
+                        <Avatar.Icon icon="event" style={styles.RowItem} size={24} />
                         <DataTable.Cell>{`${this.formatDate(item.from)} - ${
                             item.current ? 'Today' : this.formatDate(item.to)
                         }`}</DataTable.Cell>
@@ -116,7 +95,15 @@ class Specific extends Component {
     };
 
     render() {
-        return <Container>{this.renderList()}</Container>;
+        const { type, profile } = this.props;
+        const { education, experience } = profile;
+        return (
+            <Container contentContainerStyle={{ flex: 1 }}>
+                {type === 'education' && education.length === 0 && <Empty>No Education Record!</Empty>}
+                {type === 'experience' && experience.length === 0 && <Empty>No experience Record!</Empty>}
+                {(education.length !== 0 || experience.length !== 0) && this.renderList()}
+            </Container>
+        );
     }
 }
 
