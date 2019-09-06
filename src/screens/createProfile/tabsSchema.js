@@ -52,7 +52,7 @@ export default [
         type: types.INPUT
     },
     {
-        label: 'website',
+        label: 'Website',
         name: 'website',
         required: false,
         message: 'Website to show off.',
@@ -68,7 +68,7 @@ export default [
         type: types.INPUT
     },
     {
-        lable: 'Bio',
+        label: 'Bio',
         name: 'bio',
         required: false,
         message: 'We are sure you have more to tell us!',

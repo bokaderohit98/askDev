@@ -111,7 +111,7 @@ class ActionContainer extends Component {
 
     renderMultipleInputTab = () => {
         const { activeTabIndex, tabs, handleInputChange } = this.props;
-        const { value, placeholder } = tabs[activeTabIndex];
+        const { value, label } = tabs[activeTabIndex];
         const filteredSkills = value.split(' ').filter(skill => skill !== '');
         const skills = filteredSkills.map((skill, index) => (
             <Chip
@@ -129,7 +129,7 @@ class ActionContainer extends Component {
                 <TextInput
                     style={style.Input}
                     mode="outlined"
-                    placeholder={placeholder}
+                    placeholder={label}
                     value={value}
                     onChangeText={handleInputChange}
                 />
@@ -139,14 +139,14 @@ class ActionContainer extends Component {
 
     renderInputTab = multiline => {
         const { activeTabIndex, tabs, handleInputChange } = this.props;
-        const { placeholder, value } = tabs[activeTabIndex];
+        const { label, value } = tabs[activeTabIndex];
         return (
             <TextInput
                 style={style.Input}
                 mode="outlined"
                 multiline={multiline}
                 numberOfLines={multiline ? 10 : 1}
-                placeholder={placeholder}
+                placeholder={label}
                 value={value}
                 onChangeText={handleInputChange}
             />
