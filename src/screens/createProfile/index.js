@@ -83,7 +83,7 @@ class CreateProfile extends Component {
 
     handleInputChange = value => {
         const { tabs, activeTabIndex } = this.state;
-        const nextDisabled = tabs[activeTabIndex].required && value === '';
+        const nextDisabled = tabs[activeTabIndex].required && value.length === 0;
         const updated = [...tabs];
         updated[activeTabIndex].value = value;
         this.setState({ tabs: updated, nextDisabled });
@@ -94,6 +94,10 @@ class CreateProfile extends Component {
             tabValidation: {
                 error: false,
                 message: ''
+            },
+            saveProfile: {
+                error: false,
+                message: ''
             }
         });
     };
@@ -101,12 +105,9 @@ class CreateProfile extends Component {
     validateCurrentTab = () => {
         const { activeTabIndex, tabs } = this.state;
 
-        if (activeTabIndex === tabs.length || activeTabIndex === -1)
-            return false;
+        if (activeTabIndex === tabs.length || activeTabIndex === -1) return false;
 
-        const { correct, errorMessage } = tabValidations[activeTabIndex](
-            tabs[activeTabIndex].value
-        );
+        const { correct, errorMessage } = tabValidations[activeTabIndex](tabs[activeTabIndex].value);
         this.setState({
             tabValidation: {
                 error: !correct,
@@ -186,43 +187,21 @@ class CreateProfile extends Component {
 
     renderError = () => {
         const { tabValidation, saveProfile } = this.state;
-        const {
-            error: validationError,
-            message: validationErrorMessage
-        } = tabValidation;
-        const {
-            error: saveProfileError,
-            message: saveProfileErrorMessage
-        } = saveProfile;
+        const { error: validationError, message: validationErrorMessage } = tabValidation;
+        const { error: saveProfileError, message: saveProfileErrorMessage } = saveProfile;
         const error = validationError || saveProfileError;
         let message = '';
 
         if (validationError) message = validationErrorMessage;
         else if (saveProfileError) message = saveProfileErrorMessage;
 
-        return (
-            <Toast
-                visible={error}
-                color="#CC0000"
-                message={message}
-                onDismiss={this.clearErrors}
-            />
-        );
+        return <Toast visible={error} color="#CC0000" message={message} onDismiss={this.clearErrors} />;
     };
 
     render() {
-        const {
-            prevDisabled,
-            nextDisabled,
-            activeTabIndex,
-            tabs,
-            saveProfile
-        } = this.state;
+        const { prevDisabled, nextDisabled, activeTabIndex, tabs, saveProfile } = this.state;
         return (
-            <TouchableWithoutFeedback
-                onPress={Keyboard.dismiss}
-                pressable={false}
-            >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} pressable={false}>
                 <>
                     <Container>
                         {activeTabIndex > -1 && (
@@ -235,14 +214,13 @@ class CreateProfile extends Component {
                             />
                         )}
                         {activeTabIndex === -1 && this.renderInitTab()}
-                        {activeTabIndex < tabs.length &&
-                            activeTabIndex > -1 && (
-                                <ActionContainer
-                                    activeTabIndex={activeTabIndex}
-                                    tabs={tabs}
-                                    handleInputChange={this.handleInputChange}
-                                />
-                            )}
+                        {activeTabIndex < tabs.length && activeTabIndex > -1 && (
+                            <ActionContainer
+                                activeTabIndex={activeTabIndex}
+                                tabs={tabs}
+                                handleInputChange={this.handleInputChange}
+                            />
+                        )}
                         {activeTabIndex < tabs.length && (
                             <IconButton
                                 disabled={nextDisabled}

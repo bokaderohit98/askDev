@@ -6,7 +6,7 @@ export default [
         return { correct, errorMessage };
     },
     value => {
-        const correct = value.split(' ').length > 2;
+        const correct = value.split(',').length > 2;
         let errorMessage = '';
         if (!correct) errorMessage = 'Add atleast 3 skills';
         return { correct, errorMessage };
@@ -27,8 +27,7 @@ export default [
     value => {
         const correct = value.split(' ').length === 1;
         let errorMessage = '';
-        if (!correct)
-            errorMessage = 'Github username should not contain spaces';
+        if (!correct) errorMessage = 'Github username should not contain spaces';
         return { correct, errorMessage };
     },
     () => ({ correct: true })

@@ -49,16 +49,31 @@ class ActionContainer extends Component {
         });
     };
 
-    handleOptionSelection = option => {
+    handleOptionSelection = option => () => {
         const { handleInputChange } = this.props;
         handleInputChange(option);
         this.toggleProfessionMenu();
     };
 
-    removeMultiInputItem = (items, index) => {
+    removeMultiInputItem = (items, index) => () => {
         const updated = items.filter((item, i) => i !== index);
         const { handleInputChange } = this.props;
-        handleInputChange(updated.join(' '));
+        handleInputChange(updated.join(','));
+    };
+
+    handleMultiInputChange = values => value => {
+        const { handleInputChange } = this.props;
+        const len = values.length;
+        if (len !== 0 && value.substr(-1) === ' ') {
+            values.pop();
+            values.push(value.trim());
+        } else if (len !== 0 && values[len - 1].substr(-1) === ' ') {
+            values.pop();
+            values.push(`${value} `);
+        } else {
+            values.push(`${value} `);
+        }
+        handleInputChange(values.join(','));
     };
 
     renderTab = () => {
@@ -79,15 +94,11 @@ class ActionContainer extends Component {
     };
 
     renderSelectTab = () => {
-        const { activeTabIndex, tabs, handleInputChange } = this.props;
+        const { activeTabIndex, tabs } = this.props;
         const { showProfessionMenu } = this.state;
         const { options, value } = tabs[activeTabIndex];
         const menuItems = options.map(option => (
-            <Menu.Item
-                key={option}
-                onPress={() => this.handleOptionSelection(option)}
-                title={option}
-            />
+            <Menu.Item key={option} onPress={this.handleOptionSelection(option)} title={option} />
         ));
         return (
             <Menu
@@ -110,19 +121,26 @@ class ActionContainer extends Component {
     };
 
     renderMultipleInputTab = () => {
-        const { activeTabIndex, tabs, handleInputChange } = this.props;
-        const { value, label } = tabs[activeTabIndex];
-        const filteredSkills = value.split(' ').filter(skill => skill !== '');
-        const skills = filteredSkills.map((skill, index) => (
-            <Chip
-                key={skill + index}
-                mode="outlined"
-                onClose={() => this.removeMultiInputItem(filteredSkills, index)}
-                style={style.MultiIntputItem}
-            >
-                {skill}
-            </Chip>
-        ));
+        const { activeTabIndex, tabs } = this.props;
+        let { value, label } = tabs[activeTabIndex];
+
+        console.log(value);
+        value = value.split(',');
+        const filteredSkills = value.filter(skill => skill !== '');
+
+        const skills = filteredSkills.map((skill, index) =>
+            skill.substr(-1) !== ' ' ? (
+                <Chip
+                    key={skill + index}
+                    mode="outlined"
+                    onClose={this.removeMultiInputItem(filteredSkills, index)}
+                    style={style.MultiIntputItem}
+                >
+                    {skill}
+                </Chip>
+            ) : null
+        );
+
         return (
             <>
                 <MultiInputItemContainer>{skills}</MultiInputItemContainer>
@@ -130,8 +148,12 @@ class ActionContainer extends Component {
                     style={style.Input}
                     mode="outlined"
                     placeholder={label}
-                    value={value}
-                    onChangeText={handleInputChange}
+                    value={
+                        value.length === 0 || (value.length > 0 && value[value.length - 1].substr(-1) !== ' ')
+                            ? ''
+                            : value[value.length - 1].trim()
+                    }
+                    onChangeText={this.handleMultiInputChange(filteredSkills)}
                 />
             </>
         );
