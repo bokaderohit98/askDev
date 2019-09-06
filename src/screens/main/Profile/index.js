@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
 import { BottomNavigation } from 'react-native-paper';
 import General from './General';
 import Specific from './Specific';
@@ -34,7 +33,6 @@ class Profile extends Component {
 
     renderScene = ({ route }) => {
         const { profile, isCurrentUser } = this.state;
-        console.log(profile);
         switch (route.key) {
             case 'general':
                 return (

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { ScrollView, Text, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { DataTable, Avatar, Paragraph } from 'react-native-paper';
 
 const Container = styled.ScrollView`
