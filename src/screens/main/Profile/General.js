@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { View, ImageBackground, ScrollView, StyleSheet } from 'react-native';
-import {
-    Avatar,
-    Title,
-    Subheading,
-    DataTable,
-    Chip,
-    IconButton
-} from 'react-native-paper';
+import { Avatar, Title, Subheading, DataTable, Chip, IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { DoubleBounce } from 'react-native-loader';
 import HeaderImage from '../../../assets/drawerBackground.png';
@@ -138,8 +131,7 @@ class General extends Component {
 
     componentDidUpdate(prevProps, PrevState) {
         const { profile } = this.state;
-        if (PrevState.profile && PrevState.profile._id !== profile._id)
-            this.fetchGithubRepos();
+        if (PrevState.profile && PrevState.profile._id !== profile._id) this.fetchGithubRepos();
     }
 
     fetchGithubRepos = () => {
@@ -192,16 +184,12 @@ class General extends Component {
 
     renderHeader = () => {
         const { profile, isCurrentUser } = this.state;
+        const { navigateToEditScreen } = this.props;
         return (
             <HeaderContainer source={HeaderImage}>
                 {!isCurrentUser && (
                     <EditContainer>
-                        <IconButton
-                            icon="edit"
-                            color="#ffffff"
-                            size={18}
-                            onPress={() => console.log('Setting')}
-                        />
+                        <IconButton icon="edit" color="#ffffff" size={18} onPress={navigateToEditScreen} />
                     </EditContainer>
                 )}
                 <Avatar.Image size={80} source={{ uri: profile.user.avatar }} />
@@ -217,43 +205,25 @@ class General extends Component {
             <>
                 {profile.bio && profile.bio.length > 0 && (
                     <ContentContainer>
-                        <Subheading style={{ color: '#0000ff' }}>
-                            {profile.bio}
-                        </Subheading>
+                        <Subheading style={{ color: '#0000ff' }}>{profile.bio}</Subheading>
                     </ContentContainer>
                 )}
                 <ContentContainer>
                     <DataTable>
                         {profile.website && profile.website.length > 0 && (
                             <TableRow>
-                                <Avatar.Icon
-                                    icon="http"
-                                    size={24}
-                                    style={styles.RowItem}
-                                />
-                                <DataTable.Cell>
-                                    {profile.website}
-                                </DataTable.Cell>
+                                <Avatar.Icon icon="http" size={24} style={styles.RowItem} />
+                                <DataTable.Cell>{profile.website}</DataTable.Cell>
                             </TableRow>
                         )}
                         <TableRow>
-                            <Avatar.Icon
-                                icon="work"
-                                size={24}
-                                style={styles.RowItem}
-                            />
+                            <Avatar.Icon icon="work" size={24} style={styles.RowItem} />
                             <DataTable.Cell>{profile.status}</DataTable.Cell>
                         </TableRow>
                         {profile.location && profile.location.length > 0 && (
                             <TableRow>
-                                <Avatar.Icon
-                                    icon="location-city"
-                                    size={24}
-                                    style={styles.RowItem}
-                                />
-                                <DataTable.Cell>
-                                    {profile.location}
-                                </DataTable.Cell>
+                                <Avatar.Icon icon="location-city" size={24} style={styles.RowItem} />
+                                <DataTable.Cell>{profile.location}</DataTable.Cell>
                             </TableRow>
                         )}
                     </DataTable>
@@ -292,19 +262,11 @@ class General extends Component {
             const reposUI = repos.map(repo => (
                 <RepoContainer key={repo.name}>
                     <Title>{repo.name}</Title>
-                    {repo.description && (
-                        <Subheading>{repo.description}</Subheading>
-                    )}
+                    {repo.description && <Subheading>{repo.description}</Subheading>}
                     <RepoTagsContainer>
-                        <Chip
-                            style={styles.Stars}
-                        >{`Stars ${repo.stargazers_count}`}</Chip>
-                        <Chip
-                            style={styles.Forks}
-                        >{`Forks ${repo.forks_count}`}</Chip>
-                        <Chip
-                            style={styles.Watchers}
-                        >{`Watchers ${repo.watchers_count}`}</Chip>
+                        <Chip style={styles.Stars}>{`Stars ${repo.stargazers_count}`}</Chip>
+                        <Chip style={styles.Forks}>{`Forks ${repo.forks_count}`}</Chip>
+                        <Chip style={styles.Watchers}>{`Watchers ${repo.watchers_count}`}</Chip>
                     </RepoTagsContainer>
                 </RepoContainer>
             ));
@@ -313,9 +275,7 @@ class General extends Component {
                     <ContentContainer style={{ marginBottom: 3 }}>
                         <Title>Latest Github Repositories</Title>
                     </ContentContainer>
-                    <ContentContainer style={{ marginBottom: 0 }}>
-                        {reposUI}
-                    </ContentContainer>
+                    <ContentContainer style={{ marginBottom: 0 }}>{reposUI}</ContentContainer>
                 </>
             );
         }

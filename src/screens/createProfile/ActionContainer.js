@@ -124,7 +124,6 @@ class ActionContainer extends Component {
         const { activeTabIndex, tabs } = this.props;
         let { value, label } = tabs[activeTabIndex];
 
-        console.log(value);
         value = value.split(',');
         const filteredSkills = value.filter(skill => skill !== '');
 

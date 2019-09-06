@@ -23,7 +23,7 @@ const App = createStackNavigator(
         }
     },
     {
-        initialRouteName: 'CreateProfile',
+        initialRouteName: 'Main',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'

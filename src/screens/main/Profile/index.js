@@ -31,29 +31,27 @@ class Profile extends Component {
         });
     };
 
+    navigateToEditScreen = () => {
+        const { profile } = this.state;
+        const { navigation } = this.props;
+        navigation.navigate('CreateProfile', { profile, type: 'edit' });
+    };
+
     renderScene = ({ route }) => {
         const { profile, isCurrentUser } = this.state;
         switch (route.key) {
             case 'general':
                 return (
-                    <General profile={profile} isCurrentUser={isCurrentUser} />
+                    <General
+                        profile={profile}
+                        isCurrentUser={isCurrentUser}
+                        navigateToEditScreen={this.navigateToEditScreen}
+                    />
                 );
             case 'education':
-                return (
-                    <Specific
-                        profile={profile}
-                        type="education"
-                        isCurrentUser={isCurrentUser}
-                    />
-                );
+                return <Specific profile={profile} type="education" isCurrentUser={isCurrentUser} />;
             case 'experience':
-                return (
-                    <Specific
-                        profile={profile}
-                        type="experience"
-                        isCurrentUser={isCurrentUser}
-                    />
-                );
+                return <Specific profile={profile} type="experience" isCurrentUser={isCurrentUser} />;
             default:
                 return <General isCurrentUser={isCurrentUser} />;
         }

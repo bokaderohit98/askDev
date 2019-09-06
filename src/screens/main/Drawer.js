@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import { View, ScrollView, ImageBackground, StyleSheet } from 'react-native';
-import {
-    Avatar,
-    Subheading,
-    Button,
-    TouchableRipple
-} from 'react-native-paper';
+import { Avatar, Subheading, Button, TouchableRipple } from 'react-native-paper';
 import { NavigationActions } from 'react-navigation';
 import styled from 'styled-components';
 import drawerBackground from '../../assets/drawerBackground.png';
@@ -70,23 +65,17 @@ class Drawer extends Component {
             </Button>
         ));
 
-        return (
-            <NavigationItemContainer>{navigationItems}</NavigationItemContainer>
-        );
+        return <NavigationItemContainer>{navigationItems}</NavigationItemContainer>;
     };
 
     render() {
         return (
             <Container>
                 <TouchableRipple onPress={() => console.log('profile')}>
-                    <ProfileContainer
-                        source={drawerBackground}
-                        onPress={() => console.log('profile')}
-                    >
+                    <ProfileContainer source={drawerBackground} onPress={() => console.log('profile')}>
                         <Avatar.Image
                             source={{
-                                uri:
-                                    'https://www.sccpre.cat/mypng/detail/55-552688_dale-engen-person-placeholder.png'
+                                uri: 'https://www.sccpre.cat/mypng/detail/55-552688_dale-engen-person-placeholder.png'
                             }}
                         />
                         <Subheading style={styles.Handle}>@Spartan</Subheading>
@@ -96,11 +85,7 @@ class Drawer extends Component {
                 {this.renderNavigationMenu()}
                 <FooterContainer>
                     <Subheading>Made for the Community</Subheading>
-                    <Avatar.Icon
-                        icon="favorite"
-                        size={16}
-                        style={{ marginLeft: 8 }}
-                    />
+                    <Avatar.Icon icon="favorite" size={16} style={{ marginLeft: 8 }} />
                 </FooterContainer>
             </Container>
         );

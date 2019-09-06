@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import {
-    View,
-    Dimensions,
-    StyleSheet,
-    Keyboard,
-    TouchableWithoutFeedback
-} from 'react-native';
+import { View, Dimensions, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
@@ -19,7 +13,7 @@ const Container = styled.View`
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding-bottom: 72;
+    padding-bottom: 72px;
 `;
 
 const CloseContainer = styled.View`
@@ -69,21 +63,18 @@ class RegisterScreen extends Component {
                     label: 'Email',
                     name: 'email',
                     login: true,
-                    onChangeText: value =>
-                        this.handleInputChange('email', value)
+                    onChangeText: value => this.handleInputChange('email', value)
                 },
                 {
                     label: 'Password',
                     name: 'password',
                     login: true,
-                    onChangeText: value =>
-                        this.handleInputChange('password', value)
+                    onChangeText: value => this.handleInputChange('password', value)
                 },
                 {
                     label: 'Confirm Password',
                     name: 'repeatedPassword',
-                    onChangeText: value =>
-                        this.handleInputChange('repeatedPassword', value)
+                    onChangeText: value => this.handleInputChange('repeatedPassword', value)
                 }
             ],
             inputs: {
@@ -95,9 +86,7 @@ class RegisterScreen extends Component {
             inputError: {
                 error: false,
                 message:
-                    navigation.getParam('type', 'register') === 'register'
-                        ? 'Name is required'
-                        : 'Email is required'
+                    navigation.getParam('type', 'register') === 'register' ? 'Name is required' : 'Email is required'
             },
             registerUser: {
                 loading: false,
@@ -109,19 +98,9 @@ class RegisterScreen extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (
-            props &&
-            props.loginUser &&
-            props.loginUser.isAuthenticated &&
-            !props.loginUser.error
-        )
+        if (props && props.loginUser && props.loginUser.isAuthenticated && !props.loginUser.error)
             console.log('Redirect to home');
-        else if (
-            props &&
-            props.loginUser &&
-            props.loginUser.isAuthenticated &&
-            props.loginUser.error
-        )
+        else if (props && props.loginUser && props.loginUser.isAuthenticated && props.loginUser.error)
             props.navigation.navigate('CreateProfile');
         return state;
     }
@@ -156,17 +135,13 @@ class RegisterScreen extends Component {
         const isValid = type === 'register';
         const { name, email, password, repeatedPassword } = inputs;
 
-        if (name === '' && isValid)
-            this.setInputErrorMessage('Name is required');
-        else if (name.length < 4 && isValid)
-            this.setInputErrorMessage('Name too short');
+        if (name === '' && isValid) this.setInputErrorMessage('Name is required');
+        else if (name.length < 4 && isValid) this.setInputErrorMessage('Name too short');
         else if (email === '') this.setInputErrorMessage('Email is required');
         else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
             this.setInputErrorMessage('Invalid Email');
-        else if (password === '')
-            this.setInputErrorMessage('Password is required');
-        else if (password !== repeatedPassword && isValid)
-            this.setInputErrorMessage("Passwords don't match");
+        else if (password === '') this.setInputErrorMessage('Password is required');
+        else if (password !== repeatedPassword && isValid) this.setInputErrorMessage("Passwords don't match");
         else this.setInputErrorMessage('');
     };
 
@@ -216,10 +191,7 @@ class RegisterScreen extends Component {
             type: type === 'register' ? 'login' : 'register',
             inputError: {
                 error: false,
-                message:
-                    type === 'register'
-                        ? 'Email is required'
-                        : 'Name is required'
+                message: type === 'register' ? 'Email is required' : 'Name is required'
             }
         });
     };
@@ -228,9 +200,7 @@ class RegisterScreen extends Component {
         const { formGroup, inputs, type } = this.state;
         const { width } = Dimensions.get('screen');
 
-        const filteredFormGroup = formGroup.filter(
-            item => type === 'register' || item.login
-        );
+        const filteredFormGroup = formGroup.filter(item => type === 'register' || item.login);
         const filteredNames = filteredFormGroup.map(item => item.name);
         const values = filteredNames.map(name => inputs[name]);
 
@@ -250,14 +220,10 @@ class RegisterScreen extends Component {
         const { inputError, registerUser } = this.state;
         const { loginUser, clearError } = this.props;
         let message = '';
-        const error =
-            inputError.error ||
-            registerUser.error ||
-            (loginUser.error && !loginUser.isAuthenticated);
+        const error = inputError.error || registerUser.error || (loginUser.error && !loginUser.isAuthenticated);
         if (inputError.error) message = inputError.message;
         else if (registerUser.error) message = 'Invalid Details';
-        else if (loginUser.error && !loginUser.isAuthenticated)
-            message = loginUser.message;
+        else if (loginUser.error && !loginUser.isAuthenticated) message = loginUser.message;
         return (
             <Toast
                 visible={error}
@@ -279,8 +245,7 @@ class RegisterScreen extends Component {
         const { loginUser, clearSuccess } = this.props;
         let message = '';
         const success = registerUser.success || loginUser.success;
-        if (registerUser.success)
-            message = 'Registration successful! Logging in';
+        if (registerUser.success) message = 'Registration successful! Logging in';
         else if (loginUser.success) message = 'Successfully logged in';
         return (
             <Toast
@@ -303,10 +268,7 @@ class RegisterScreen extends Component {
         const disabled = registerUser.loading || loginUser.loading;
         return (
             <>
-                <TouchableWithoutFeedback
-                    onPress={Keyboard.dismiss}
-                    accessible={false}
-                >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                     <Container>
                         <CloseContainer>
                             <IconButton icon="close" disabled={disabled} />
@@ -322,15 +284,8 @@ class RegisterScreen extends Component {
                                 {type === 'register' ? 'Sign Up' : 'Login'}
                             </Button>
                             <Message>
-                                <Subheading>
-                                    {type === 'register'
-                                        ? 'Already Registered?'
-                                        : 'Not a Member?'}
-                                </Subheading>
-                                <Button
-                                    onPress={this.handleSwitchNavigation}
-                                    disabled={disabled}
-                                >
+                                <Subheading>{type === 'register' ? 'Already Registered?' : 'Not a Member?'}</Subheading>
+                                <Button onPress={this.handleSwitchNavigation} disabled={disabled}>
                                     {type === 'register' ? 'Login' : 'Register'}
                                 </Button>
                             </Message>

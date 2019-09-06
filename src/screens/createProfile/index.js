@@ -19,7 +19,14 @@ const Container = styled.View`
     justify-content: space-between;
     align-items: center;
     margin-top: 40px;
-    margin-bottom: 40px;
+    padding-bottom: 80px;
+`;
+
+const CloseContainer = styled.View`
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 24px;
+    padding: 16px;
 `;
 
 const TabContainer = styled.View`
@@ -55,6 +62,25 @@ class CreateProfile extends Component {
                 message: false
             }
         };
+    }
+
+    componentDidMount() {
+        const { navigation } = this.props;
+        const { tabs: oldTabs } = this.state;
+        const profile = navigation.getParam('profile', {});
+        const type = navigation.getParam('type');
+
+        if (type === 'edit') {
+            const tabs = oldTabs.map(tab => {
+                const updated = { ...tab };
+                if (profile[updated.name]) updated.value = profile[updated.name];
+                if (updated.name === 'skills') updated.value = updated.value.map(value => value.trim()).join(',');
+                return updated;
+            });
+            this.setState({
+                tabs
+            });
+        }
     }
 
     handleTabSwitch = event => {
@@ -160,10 +186,19 @@ class CreateProfile extends Component {
             });
     };
 
+    closeScreen = () => {
+        const { navigation } = this.props;
+        navigation.goBack();
+    };
+
     renderInitTab = () => {
+        const { navigation } = this.props;
+        const type = navigation.getParam('type', 'create');
         return (
             <TabContainer>
-                <Message>Let&apos; create your awesome profile!</Message>
+                <Message>
+                    {type === 'edit' ? `Let's Edit your Awesome Profile!` : `Let's Create your Awesome Profile!`}
+                </Message>
             </TabContainer>
         );
     };
@@ -200,9 +235,16 @@ class CreateProfile extends Component {
 
     render() {
         const { prevDisabled, nextDisabled, activeTabIndex, tabs, saveProfile } = this.state;
+        const { navigation } = this.props;
+        const type = navigation.getParam('type', 'create');
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} pressable={false}>
                 <>
+                    {type === 'edit' && (
+                        <CloseContainer>
+                            <IconButton icon="close" onPress={this.closeScreen} />
+                        </CloseContainer>
+                    )}
                     <Container>
                         {activeTabIndex > -1 && (
                             <IconButton
