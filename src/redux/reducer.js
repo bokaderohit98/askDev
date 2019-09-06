@@ -6,29 +6,28 @@ const reducer = (state = {}, { type, payload }) => {
             return {
                 ...state,
                 loginLoading: true,
-                loginSuccess: false,
-                loginError: false,
-                loginErrorMessage: ''
+                isAuthenticated: false,
+                loginError: false
             };
         case actions.LOGIN_USER_SUCCESS:
             return {
                 ...state,
-                loginError: false,
-                user: payload.user,
-                isAuthenticated: true
+                isAuthenticated: true,
+                user: payload.user
             };
         case actions.LOGIN_USER_ERROR:
             return {
                 ...state,
                 loginLoading: false,
-                loginError: true
+                loginError: true,
+                profileLoading: false
             };
         case actions.FETCH_PROFILE_SUCCESS:
             return {
                 ...state,
                 loginLoading: false,
-                profile: payload.profile,
-                loginError: false
+                loginError: false,
+                profile: payload.profile
             };
         case actions.FETCH_DEVELOPERS_BEGIN:
             return {
@@ -49,11 +48,6 @@ const reducer = (state = {}, { type, payload }) => {
                 developersLoading: false,
                 developersError: true,
                 developersErrorMessage: payload.message
-            };
-        case actions.SET_PROFILE:
-            return {
-                ...state,
-                profile: payload.profile
             };
         case actions.CLEAR_SUCCESS:
             return { ...state };

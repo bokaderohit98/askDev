@@ -23,7 +23,7 @@ const App = createStackNavigator(
         }
     },
     {
-        initialRouteName: 'Main',
+        initialRouteName: 'Authentication',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { IconButton, Button } from 'react-native-paper';
 import styled from 'styled-components';
+import { NavigationActions } from 'react-navigation';
 import tabsSchema from './tabsSchema';
 import tabValidations from './tabValidations';
 import ActionContainer from './ActionContainer';
@@ -165,7 +166,8 @@ class CreateProfile extends Component {
                 });
             })
             .then(res => {
-                const { setProfile } = this.props;
+                const { setProfile, navigation } = this.props;
+                const type = navigation.getParam('type', 'create');
                 setProfile(res.data);
                 this.setState({
                     saveProfile: {
@@ -173,6 +175,8 @@ class CreateProfile extends Component {
                         loading: false
                     }
                 });
+                if (type === 'create') navigation.replace('Main');
+                else navigation.goBack();
             })
             .catch(err => {
                 this.setState({

@@ -19,8 +19,7 @@ class AuthService {
         const jwt = await this.getToken();
         const user = jwtDecode(jwt);
         const expiryTime = user.exp * 1000;
-        if (expiryTime - 10 ** 5 < new Date().valueOf())
-            return this.refreshToken();
+        if (expiryTime - 10 ** 5 < new Date().valueOf()) return this.refreshToken();
         return Promise.resolve();
     };
 

@@ -98,10 +98,13 @@ class RegisterScreen extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (props && props.loginUser && props.loginUser.isAuthenticated && !props.loginUser.error)
-            console.log('Redirect to home');
-        else if (props && props.loginUser && props.loginUser.isAuthenticated && props.loginUser.error)
-            props.navigation.navigate('CreateProfile');
+        const { navigation, loginUser } = props;
+        console.log('*******************************************************');
+        console.log(loginUser);
+        if (loginUser && !loginUser.loading && loginUser.isAuthenticated && loginUser.error)
+            navigation.replace('CreateProfile');
+        else if (loginUser && !loginUser.loading && loginUser.isAuthenticated && !loginUser.error)
+            navigation.replace('Main');
         return state;
     }
 
@@ -196,6 +199,11 @@ class RegisterScreen extends Component {
         });
     };
 
+    closeScreen = () => {
+        const { navigation } = this.props;
+        navigation.replace('Main');
+    };
+
     renderFormGroup = disabled => {
         const { formGroup, inputs, type } = this.state;
         const { width } = Dimensions.get('screen');
@@ -271,7 +279,7 @@ class RegisterScreen extends Component {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                     <Container>
                         <CloseContainer>
-                            <IconButton icon="close" disabled={disabled} />
+                            <IconButton icon="close" disabled={disabled} onPress={this.closeScreen} />
                         </CloseContainer>
                         <FormContainer>
                             {this.renderFormGroup(disabled)}

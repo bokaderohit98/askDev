@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BottomNavigation } from 'react-native-paper';
+import { connect } from 'react-redux';
 import General from './General';
 import Specific from './Specific';
 import tabsSchema from './tabsSchema';
@@ -17,11 +18,12 @@ class Profile extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { navigation } = props;
-        const profile = navigation.getParam('profile');
+        const { navigation, profile: currentProfile } = props;
+        const isCurrentUser = navigation.getParam('isCurrentUser', false);
+        const developerProfile = navigation.getParam('profile');
         return {
             ...state,
-            profile
+            profile: isCurrentUser ? currentProfile : developerProfile
         };
     }
 
@@ -74,4 +76,8 @@ class Profile extends Component {
     }
 }
 
-export default Profile;
+const mapStateToProps = state => ({
+    profile: state.profile
+});
+
+export default connect(mapStateToProps)(Profile);

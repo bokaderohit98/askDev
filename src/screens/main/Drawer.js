@@ -3,6 +3,7 @@ import { View, ScrollView, ImageBackground, StyleSheet } from 'react-native';
 import { Avatar, Subheading, Button, TouchableRipple } from 'react-native-paper';
 import { NavigationActions } from 'react-navigation';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
 import drawerBackground from '../../assets/drawerBackground.png';
 
 const Container = styled.View`
@@ -50,6 +51,18 @@ class Drawer extends Component {
         navigation.dispatch(navigateAction);
     };
 
+    navigateToAuthentication = () => {
+        const { navigation } = this.props;
+        navigation.replace('Authentication');
+    };
+
+    navigateToProfile = () => {
+        const { navigation } = this.props;
+        const { profile } = this.props;
+        if (!profile || Object.keys(profile).length === 0) return;
+        navigation.navigate('Profile', { profile, isCurrentUser: true });
+    };
+
     renderNavigationMenu = () => {
         const navigationItems = this.routes.map(route => (
             <Button
@@ -69,16 +82,22 @@ class Drawer extends Component {
     };
 
     render() {
+        const { user, isAuthenticated, profile } = this.props;
         return (
             <Container>
-                <TouchableRipple onPress={() => console.log('profile')}>
-                    <ProfileContainer source={drawerBackground} onPress={() => console.log('profile')}>
-                        <Avatar.Image
-                            source={{
-                                uri: 'https://www.sccpre.cat/mypng/detail/55-552688_dale-engen-person-placeholder.png'
-                            }}
-                        />
-                        <Subheading style={styles.Handle}>@Spartan</Subheading>
+                <TouchableRipple onPress={this.navigateToProfile}>
+                    <ProfileContainer source={drawerBackground}>
+                        {isAuthenticated && user && profile && (
+                            <>
+                                <Avatar.Image source={{ uri: user.avatar }} />
+                                <Subheading style={styles.Handle}>{`@ ${profile.handle}`}</Subheading>
+                            </>
+                        )}
+                        {!isAuthenticated && (
+                            <Button mode="contained" onPress={this.navigateToAuthentication}>
+                                Login
+                            </Button>
+                        )}
                     </ProfileContainer>
                 </TouchableRipple>
 
@@ -92,4 +111,10 @@ class Drawer extends Component {
     }
 }
 
-export default Drawer;
+const mapStateToProps = state => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    profile: state.profile
+});
+
+export default connect(mapStateToProps)(Drawer);

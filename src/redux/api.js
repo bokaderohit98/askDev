@@ -68,8 +68,8 @@ export const fetchDevelopers = () => dispatch => {
 
 export const setProfile = profile => dispatch => {
     dispatch({
-        type: actions.SET_PROFILE,
-        payload: profile
+        type: actions.FETCH_PROFILE_SUCCESS,
+        payload: { profile }
     });
 };
 

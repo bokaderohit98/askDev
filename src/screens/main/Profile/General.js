@@ -131,7 +131,11 @@ class General extends Component {
 
     componentDidUpdate(prevProps, PrevState) {
         const { profile } = this.state;
-        if (PrevState.profile && PrevState.profile._id !== profile._id) this.fetchGithubRepos();
+        if (
+            (PrevState.profile && PrevState.profile._id !== profile._id) ||
+            PrevState.profile.githubusername !== profile.githubusername
+        )
+            this.fetchGithubRepos();
     }
 
     fetchGithubRepos = () => {
