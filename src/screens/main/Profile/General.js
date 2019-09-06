@@ -254,8 +254,6 @@ class General extends Component {
     };
 
     render() {
-        const { profile } = this.state;
-        console.log(this.state);
         return (
             <Container>
                 {this.renderHeader()}

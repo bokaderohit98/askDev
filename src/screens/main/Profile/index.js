@@ -1,32 +1,16 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { BottomNavigation } from 'react-native-paper';
 import General from './General';
-import Education from './Education';
-import Experience from './Experience';
+import Specific from './Specific';
+import tabsSchema from './tabsSchema';
 
 class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
             activeTabIndex: 0,
-            tabs: [
-                {
-                    key: 'general',
-                    title: 'General',
-                    icon: 'info-outline'
-                },
-                {
-                    key: 'education',
-                    title: 'Education',
-                    icon: 'school'
-                },
-                {
-                    key: 'experience',
-                    title: 'Experience',
-                    icon: 'work'
-                }
-            ],
+            tabs: tabsSchema,
             profile: {
                 skills: [
                     'javascript',
@@ -48,7 +32,7 @@ class Profile extends Component {
                 location: 'Delhi',
                 bio: 'Third year student at N.S.U.T. Gaming and coding rocks',
                 status: 'Student',
-                githubusername: 'nikhilgufdasfsdfdsfsdafsadfpta30',
+                githubusername: 'nikhilgupta30',
                 experience: [
                     {
                         current: false,
@@ -70,7 +54,8 @@ class Profile extends Component {
                         fieldofstudy: 'Computer Engineering',
                         from: '2016-08-01T00:00:00.000Z',
                         to: null,
-                        description: ''
+                        description:
+                            'Backchodi all around the corner with through emphasis on new techniques to frustrate others'
                     }
                 ],
                 date: '2019-04-10T11:49:11.077Z',
@@ -91,9 +76,9 @@ class Profile extends Component {
             case 'general':
                 return <General profile={profile} />;
             case 'education':
-                return <Education />;
+                return <Specific profile={profile} type="education" />;
             case 'experience':
-                return <Experience />;
+                return <Specific profile={profile} type="experience" />;
             default:
                 return <General />;
         }
