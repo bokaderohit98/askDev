@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { View, ImageBackground, ScrollView, StyleSheet } from 'react-native';
-import { Avatar, Title, Subheading, DataTable, Chip } from 'react-native-paper';
+import {
+    Avatar,
+    Title,
+    Subheading,
+    DataTable,
+    Chip,
+    IconButton
+} from 'react-native-paper';
 import axios from 'axios';
 import { DoubleBounce } from 'react-native-loader';
 import HeaderImage from '../../../assets/drawerBackground.png';
@@ -16,7 +23,14 @@ const HeaderContainer = styled.ImageBackground`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 180px;
+    height: 250px;
+`;
+
+const EditContainer = styled.View`
+    display: flex;
+    align-self: flex-end;
+    flex-direction: row-reverse;
+    padding: 16px;
 `;
 
 const MainContainer = styled.ScrollView`
@@ -142,9 +156,16 @@ class General extends Component {
     };
 
     renderHeader = () => {
-        const { profile } = this.state;
+        const { profile, isCurrentUser } = this.state;
         return (
             <HeaderContainer source={HeaderImage}>
+                <EditContainer>
+                    <IconButton
+                        icon="settings"
+                        color="#ffffff"
+                        onPress={() => console.log('Setting')}
+                    />
+                </EditContainer>
                 <Avatar.Image size={80} source={{ uri: profile.user.avatar }} />
                 <Title>{profile.user.name}</Title>
                 <Subheading>{`@${profile.handle}`}</Subheading>

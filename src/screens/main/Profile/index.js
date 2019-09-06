@@ -9,6 +9,7 @@ class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isCurrentUser: true,
             activeTabIndex: 0,
             tabs: tabsSchema,
             profile: {
@@ -71,14 +72,28 @@ class Profile extends Component {
     };
 
     renderScene = ({ route }) => {
-        const { profile } = this.state;
+        const { profile, isCurrentUser } = this.state;
         switch (route.key) {
             case 'general':
-                return <General profile={profile} />;
+                return (
+                    <General profile={profile} isCurrentUser={isCurrentUser} />
+                );
             case 'education':
-                return <Specific profile={profile} type="education" />;
+                return (
+                    <Specific
+                        profile={profile}
+                        type="education"
+                        isCurrentUser={isCurrentUser}
+                    />
+                );
             case 'experience':
-                return <Specific profile={profile} type="experience" />;
+                return (
+                    <Specific
+                        profile={profile}
+                        type="experience"
+                        isCurrentUser={isCurrentUser}
+                    />
+                );
             default:
                 return <General />;
         }
