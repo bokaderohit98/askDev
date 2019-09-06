@@ -10,22 +10,20 @@ class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isCurrentUser: true,
+            isCurrentUser: false,
             activeTabIndex: 0,
             tabs: tabsSchema,
             profile: {}
         };
     }
 
-    componentDidMount() {
-        const { navigation } = this.props;
+    static getDerivedStateFromProps(props, state) {
+        const { navigation } = props;
         const profile = navigation.getParam('profile');
-        console.log('mounting');
-        console.log('Profile');
-        console.log(profile);
-        this.setState({
+        return {
+            ...state,
             profile
-        });
+        };
     }
 
     handleIndexChange = index => {
@@ -36,6 +34,7 @@ class Profile extends Component {
 
     renderScene = ({ route }) => {
         const { profile, isCurrentUser } = this.state;
+        console.log(profile);
         switch (route.key) {
             case 'general':
                 return (
@@ -58,7 +57,7 @@ class Profile extends Component {
                     />
                 );
             default:
-                return <General />;
+                return <General isCurrentUser={isCurrentUser} />;
         }
     };
 

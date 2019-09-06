@@ -110,7 +110,8 @@ class General extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            profile: props.profile,
+            profile: {},
+            isCurrentUser: false,
             clientId: 'f79e158eb0998c15fd60',
             clientSecret: '5b20d78a85c5c943061dcc6625b648a913b20d6a',
             github: {
@@ -123,11 +124,35 @@ class General extends Component {
     }
 
     componentDidMount() {
-        this.fetchGithubProfiles();
+        this.fetchGithubRepos();
     }
 
-    fetchGithubProfiles = () => {
+    static getDerivedStateFromProps(props, state) {
+        const { profile, isCurrentUser } = props;
+        return {
+            ...state,
+            profile,
+            isCurrentUser
+        };
+    }
+
+    componentDidUpdate(prevProps, PrevState) {
+        const { profile } = this.state;
+        if (PrevState.profile && PrevState.profile._id !== profile._id)
+            this.fetchGithubRepos();
+    }
+
+    fetchGithubRepos = () => {
         const { github, profile, clientId, clientSecret } = this.state;
+        if (!profile.githubusername || profile.githubusername.length === 0) {
+            this.setState({
+                github: {
+                    error: true,
+                    repos: []
+                }
+            });
+            return;
+        }
         this.setState({
             github: {
                 ...github,
@@ -145,12 +170,22 @@ class General extends Component {
             })
             .then(res => {
                 this.setState({
-                    github: { ...github, loading: false, repos: res.data }
+                    github: {
+                        ...github,
+                        loading: false,
+                        error: false,
+                        repos: res.data
+                    }
                 });
             })
             .catch(err => {
                 this.setState({
-                    github: { ...github, loading: false, error: true }
+                    github: {
+                        ...github,
+                        loading: false,
+                        error: true,
+                        repos: []
+                    }
                 });
             });
     };
@@ -180,21 +215,27 @@ class General extends Component {
         const { profile } = this.state;
         return (
             <>
-                <ContentContainer>
-                    <Subheading style={{ color: '#0000ff' }}>
-                        {profile.bio}
-                    </Subheading>
-                </ContentContainer>
+                {profile.bio && profile.bio.length > 0 && (
+                    <ContentContainer>
+                        <Subheading style={{ color: '#0000ff' }}>
+                            {profile.bio}
+                        </Subheading>
+                    </ContentContainer>
+                )}
                 <ContentContainer>
                     <DataTable>
-                        <TableRow>
-                            <Avatar.Icon
-                                icon="http"
-                                size={24}
-                                style={styles.RowItem}
-                            />
-                            <DataTable.Cell>{profile.website}</DataTable.Cell>
-                        </TableRow>
+                        {profile.website && profile.website.length > 0 && (
+                            <TableRow>
+                                <Avatar.Icon
+                                    icon="http"
+                                    size={24}
+                                    style={styles.RowItem}
+                                />
+                                <DataTable.Cell>
+                                    {profile.website}
+                                </DataTable.Cell>
+                            </TableRow>
+                        )}
                         <TableRow>
                             <Avatar.Icon
                                 icon="work"
@@ -203,14 +244,18 @@ class General extends Component {
                             />
                             <DataTable.Cell>{profile.status}</DataTable.Cell>
                         </TableRow>
-                        <TableRow>
-                            <Avatar.Icon
-                                icon="location-city"
-                                size={24}
-                                style={styles.RowItem}
-                            />
-                            <DataTable.Cell>{profile.location}</DataTable.Cell>
-                        </TableRow>
+                        {profile.location && profile.location.length > 0 && (
+                            <TableRow>
+                                <Avatar.Icon
+                                    icon="location-city"
+                                    size={24}
+                                    style={styles.RowItem}
+                                />
+                                <DataTable.Cell>
+                                    {profile.location}
+                                </DataTable.Cell>
+                            </TableRow>
+                        )}
                     </DataTable>
                 </ContentContainer>
             </>
@@ -243,7 +288,7 @@ class General extends Component {
                     </LoaderContainer>
                 </ContentContainer>
             );
-        if (!loading && repos && repos.length > 0) {
+        if (!loading && !error && repos && repos.length > 0) {
             const reposUI = repos.map(repo => (
                 <RepoContainer key={repo.name}>
                     <Title>{repo.name}</Title>

@@ -34,13 +34,31 @@ const styles = StyleSheet.create({
 });
 
 class Specific extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            profile: {},
+            isCurrentUser: false
+        };
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        const { profile, isCurrentUser } = props;
+        return {
+            ...state,
+            profile,
+            isCurrentUser
+        };
+    }
+
     formatDate = date => {
         const dateObj = new Date(date);
         return `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`;
     };
 
     renderList = () => {
-        const { profile, type } = this.props;
+        const { profile } = this.state;
+        const { type } = this.props;
         const isEducation = type === 'education';
         const iteratable = isEducation ? profile.education : profile.experience;
         const items = iteratable.map(item => (
