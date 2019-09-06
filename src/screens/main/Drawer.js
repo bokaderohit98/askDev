@@ -48,6 +48,7 @@ class Drawer extends Component {
     navigateToScreen = routeName => () => {
         const { navigation } = this.props;
         const navigateAction = NavigationActions.navigate({ routeName });
+        navigation.closeDrawer();
         navigation.dispatch(navigateAction);
     };
 
@@ -60,6 +61,7 @@ class Drawer extends Component {
         const { navigation } = this.props;
         const { profile } = this.props;
         if (!profile || Object.keys(profile).length === 0) return;
+        navigation.closeDrawer();
         navigation.navigate('Profile', { profile, isCurrentUser: true });
     };
 

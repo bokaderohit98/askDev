@@ -99,8 +99,6 @@ class RegisterScreen extends Component {
 
     static getDerivedStateFromProps(props, state) {
         const { navigation, loginUser } = props;
-        console.log('*******************************************************');
-        console.log(loginUser);
         if (loginUser && !loginUser.loading && loginUser.isAuthenticated && loginUser.error)
             navigation.replace('CreateProfile');
         else if (loginUser && !loginUser.loading && loginUser.isAuthenticated && !loginUser.error)
