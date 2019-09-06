@@ -86,11 +86,11 @@ class Specific extends Component {
                             item.current ? 'Today' : this.formatDate(item.to)
                         }`}</DataTable.Cell>
                     </TableRow>
-                    {item.description && item.description.length > 0 && (
+                    {item.description && item.description.length > 0 ? (
                         <DescriptionConainer>
                             <Paragraph>{item.description}</Paragraph>
                         </DescriptionConainer>
-                    )}
+                    ) : null}
                 </DataTable>
             </ItemContainer>
         ));

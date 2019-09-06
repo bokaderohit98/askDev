@@ -73,6 +73,13 @@ class Developers extends Component {
         };
     }
 
+    navigateToProfile = _id => () => {
+        const { developers } = this.state;
+        const { navigation } = this.props;
+        const profile = developers.find(developer => developer._id === _id);
+        navigation.navigate('Profile', { profile });
+    };
+
     renderDeveloperSkills = skills => {
         const chips = skills.map(skill => (
             <Chip key={skill} style={styles.SkillChip}>
@@ -111,7 +118,7 @@ class Developers extends Component {
                     <Card.Actions style={styles.CardAction}>
                         <IconButton
                             icon="arrow-forward"
-                            onPress={() => console.log(developer.user._id)}
+                            onPress={this.navigateToProfile(developer._id)}
                             color="#673ab7"
                         />
                     </Card.Actions>

@@ -30,7 +30,7 @@ const EditContainer = styled.View`
     display: flex;
     align-self: flex-end;
     flex-direction: row-reverse;
-    padding: 16px;
+    padding: 8px;
 `;
 
 const MainContainer = styled.ScrollView`
@@ -159,13 +159,16 @@ class General extends Component {
         const { profile, isCurrentUser } = this.state;
         return (
             <HeaderContainer source={HeaderImage}>
-                <EditContainer>
-                    <IconButton
-                        icon="settings"
-                        color="#ffffff"
-                        onPress={() => console.log('Setting')}
-                    />
-                </EditContainer>
+                {!isCurrentUser && (
+                    <EditContainer>
+                        <IconButton
+                            icon="edit"
+                            color="#ffffff"
+                            size={18}
+                            onPress={() => console.log('Setting')}
+                        />
+                    </EditContainer>
+                )}
                 <Avatar.Image size={80} source={{ uri: profile.user.avatar }} />
                 <Title>{profile.user.name}</Title>
                 <Subheading>{`@${profile.handle}`}</Subheading>

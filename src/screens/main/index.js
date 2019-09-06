@@ -18,7 +18,7 @@ const Main = createDrawerNavigator(
         }
     },
     {
-        initialRouteName: 'Profile',
+        initialRouteName: 'Feed',
         drawerWidth: 300,
         drawerType: 'slide',
         edgeWidth: 20,
