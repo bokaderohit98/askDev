@@ -23,6 +23,7 @@ class Profile extends Component {
         const developerProfile = navigation.getParam('profile');
         return {
             ...state,
+            isCurrentUser,
             profile: isCurrentUser ? currentProfile : developerProfile
         };
     }

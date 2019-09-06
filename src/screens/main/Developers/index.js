@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import {
-    Avatar,
-    Card,
-    IconButton,
-    Title,
-    Subheading,
-    Chip
-} from 'react-native-paper';
+import { Avatar, Card, IconButton, Title, Subheading, Chip } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { Error, Loading, Empty } from '../../../components';
 import { fetchDevelopers } from '../../../redux/api';
@@ -54,7 +47,8 @@ class Developers extends Component {
         this.state = {
             developers: [],
             loading: false,
-            developersError: {}
+            developersError: {},
+            profile: {}
         };
     }
 
@@ -64,20 +58,21 @@ class Developers extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { developers, loading, developersError } = props;
+        const { developers, loading, developersError, profile } = props;
         return {
             ...state,
             developers,
             loading,
-            developersError
+            developersError,
+            profile
         };
     }
 
     navigateToProfile = _id => () => {
-        const { developers } = this.state;
+        const { developers, profile } = this.state;
         const { navigation } = this.props;
-        const profile = developers.find(developer => developer._id === _id);
-        navigation.navigate('Profile', { profile });
+        const developerProfile = developers.find(developer => developer._id === _id);
+        navigation.navigate('Profile', { profile: developerProfile, isCurrentUser: profile._id === _id });
     };
 
     renderDeveloperSkills = skills => {
@@ -93,26 +88,19 @@ class Developers extends Component {
         const { developers } = this.state;
         return developers.map(developer => {
             let company = '';
-            if (developer.company && developer.company.length > 0)
-                company = `at ${developer.company}`;
+            if (developer.company && developer.company.length > 0) company = `at ${developer.company}`;
             return (
                 <Card style={styles.DeveloperCard} key={developer.user._id}>
                     <Card.Title
                         title={developer.user.name}
                         subtitle={`@${developer.handle}`}
-                        left={props => (
-                            <Avatar.Image
-                                {...props}
-                                source={{ uri: `${developer.user.avatar}` }}
-                            />
-                        )}
+                        left={props => <Avatar.Image {...props} source={{ uri: `${developer.user.avatar}` }} />}
                     />
                     <Card.Content>
                         <Title>{`${developer.status} ${company}`}</Title>
-                        {developer.location &&
-                            developer.location.length > 0 && (
-                                <Subheading>{`Lives in ${developer.location}`}</Subheading>
-                            )}
+                        {developer.location && developer.location.length > 0 && (
+                            <Subheading>{`Lives in ${developer.location}`}</Subheading>
+                        )}
                         {this.renderDeveloperSkills(developer.skills)}
                     </Card.Content>
                     <Card.Actions style={styles.CardAction}>
@@ -128,19 +116,14 @@ class Developers extends Component {
     };
 
     render() {
-        const { loading, developers, developersError } = this.state;
+        const { loading, developers, developersError, profile } = this.state;
         const { error } = developersError;
         return (
             <Container>
                 {loading && <Loading />}
                 {!loading && error && <Error />}
-                {!loading &&
-                    !error &&
-                    developers &&
-                    developers.length === 0 && (
-                        <Empty>No Developers Present!</Empty>
-                    )}
-                {!loading && !error && developers && developers.length > 0 && (
+                {!loading && !error && developers && developers.length === 0 && <Empty>No Developers Present!</Empty>}
+                {!loading && !error && developers && developers.length > 0 && profile && (
                     <MainContainer>{this.renderDevelopers()}</MainContainer>
                 )}
             </Container>
@@ -154,7 +137,8 @@ const mapStateToProps = state => ({
     developersError: {
         error: state.developersError,
         message: state.developersErrorMessage
-    }
+    },
+    profile: state.profile
 });
 
 export default connect(

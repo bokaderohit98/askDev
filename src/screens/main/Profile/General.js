@@ -191,7 +191,7 @@ class General extends Component {
         const { navigateToEditScreen } = this.props;
         return (
             <HeaderContainer source={HeaderImage}>
-                {!isCurrentUser && (
+                {isCurrentUser && (
                     <EditContainer>
                         <IconButton icon="edit" color="#ffffff" size={18} onPress={navigateToEditScreen} />
                     </EditContainer>
