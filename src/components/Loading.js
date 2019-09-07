@@ -12,6 +12,6 @@ const Container = styled.View`
 
 export default ({ size = 30 }) => (
     <Container>
-        <DoubleBounce size={size} color="#673ab7" />
+        <DoubleBounce size={size} color="#6200ea" />
     </Container>
 );

@@ -17,13 +17,13 @@ const App = createStackNavigator(
             navigationOptions: {
                 headerStyle: {
                     display: 'flex',
-                    backgroundColor: '#673ab7'
+                    backgroundColor: '#6200ea'
                 }
             }
         }
     },
     {
-        initialRouteName: 'Authentication',
+        initialRouteName: 'Main',
         defaultNavigationOptions: {
             headerStyle: {
                 display: 'none'

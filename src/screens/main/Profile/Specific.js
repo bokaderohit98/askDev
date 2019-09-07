@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { ScrollView, StyleSheet } from 'react-native';
-import { DataTable, Avatar, Paragraph } from 'react-native-paper';
-import { Empty } from '../../../components';
+import { StyleSheet, Text, Dimensions, View } from 'react-native';
+import DateTimePicker from 'react-native-datepicker';
+import {
+    DataTable,
+    Avatar,
+    Paragraph,
+    FAB,
+    Portal,
+    Modal,
+    TextInput,
+    Button,
+    Checkbox,
+    Subheading,
+    Title
+} from 'react-native-paper';
+import { Empty, Toast } from '../../../components';
+import modalSchema, { types } from './modalSchema';
 
 const Container = styled.ScrollView`
     display: flex;
@@ -26,11 +40,44 @@ const TableRow = styled.View`
     height: 50px;
 `;
 
-const DescriptionConainer = styled.View``;
+const ModalContainer = styled.ScrollView`
+    display: flex;
+    background-color: #ffffff;
+    padding: 16px;
+    width: ${Dimensions.get('screen').width - 40};
+`;
+
+const ModalItemContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 16px;
+`;
 
 const styles = StyleSheet.create({
     RowItem: {
         marginRight: 32
+    },
+    FAB: {
+        backgroundColor: '#6200ea',
+        position: 'absolute',
+        margin: 16,
+        bottom: 0,
+        right: 0
+    },
+    ModalContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column'
+    },
+    Input: {
+        display: 'flex',
+        flex: 1,
+        backgroundColor: '#ffffff',
+        alignSelf: 'stretch',
+        marginBottom: 10
     }
 });
 
@@ -39,7 +86,13 @@ class Specific extends Component {
         super(props);
         this.state = {
             profile: {},
-            isCurrentUser: false
+            isCurrentUser: false,
+            modalOpen: false,
+            modalData: modalSchema,
+            modalError: {
+                error: false,
+                message: ''
+            }
         };
     }
 
@@ -52,9 +105,172 @@ class Specific extends Component {
         };
     }
 
+    toggleModal = () => {
+        const { modalOpen } = this.state;
+        this.setState({
+            modalOpen: !modalOpen
+        });
+    };
+
     formatDate = date => {
         const dateObj = new Date(date);
         return `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`;
+    };
+
+    handleInputChange = (field, inputType, subType) => value => {
+        const { modalData } = this.state;
+        const { type } = this.props;
+        let updated = [...modalData[type]];
+
+        updated = updated.map(item => {
+            const updatedItem = { ...item };
+
+            if (updatedItem.name === field) {
+                if (inputType === types.CHECKBOX) {
+                    updatedItem.value = !updatedItem.value;
+                    updated[3].dates[1].disabled = updatedItem.value;
+                } else if (updatedItem.type === types.DATE) {
+                    updatedItem.dates = updatedItem.dates.map(innerItem => {
+                        const updatedInnerItem = { ...innerItem };
+                        if (updatedInnerItem.name === subType) updatedInnerItem.value = value;
+                        return updatedInnerItem;
+                    });
+                } else updatedItem.value = value;
+            }
+            return updatedItem;
+        });
+
+        const updatedModalData = { ...modalData };
+        updatedModalData[type] = updated;
+
+        this.setState({
+            modalData: updatedModalData
+        });
+    };
+
+    validateModal = () => {
+        const { modalData } = this.state;
+        const { type } = this.props;
+        const currentData = modalData[type];
+        let res = {};
+
+        for (let i = 0; i < currentData.length; i += 1) {
+            const item = currentData[i];
+            const { name, value, validation } = item;
+            if (name === 'dates') {
+                const { value: from } = item.dates[0];
+                const { value: to, disabled } = item.dates[1];
+                res = validation(from, to, disabled);
+            } else res = validation(value);
+            if (res.error) {
+                this.setState({
+                    modalError: res
+                });
+                return false;
+            }
+        }
+        return true;
+    };
+
+    saveInformation = () => {
+        if (!this.validateModal()) return;
+        console.log('saving');
+    };
+
+    clearError = () => {
+        this.setState({
+            modalError: {
+                error: false,
+                message: ''
+            }
+        });
+    };
+
+    renderAddModal = () => {
+        const { type } = this.props;
+        const { modalOpen, modalData } = this.state;
+        const currentModal = modalData[type];
+
+        const modalItems = Object.keys(currentModal).map(key => {
+            const currentItem = currentModal[key];
+            const { label, value, type, dates, name } = currentItem;
+
+            switch (type) {
+                case types.INPUT:
+                    return (
+                        <TextInput
+                            key={label}
+                            placeholder={label}
+                            value={value}
+                            style={{ ...styles.Input, height: 50 }}
+                            onChangeText={this.handleInputChange(name)}
+                        />
+                    );
+                case types.MULTILINE_INPUT:
+                    return (
+                        <TextInput
+                            key={label}
+                            placeholder={label}
+                            value={value}
+                            numberOfLines={3}
+                            style={styles.Input}
+                            onChangeText={this.handleInputChange(name)}
+                        />
+                    );
+                case types.DATE: {
+                    const date = new Date();
+                    const maxDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+                    const datesUI = dates.map((date, index) => (
+                        <DateTimePicker
+                            disabled={date.disabled}
+                            style={{ marginRight: index === 0 ? 24 : 0 }}
+                            key={date.label}
+                            placeholder={date.label}
+                            iconComponent={<Avatar.Icon icon="date-range" size={24} />}
+                            customStyles={{
+                                dateInput: {
+                                    marginRight: 8
+                                }
+                            }}
+                            date={date.value}
+                            maxDate={maxDate}
+                            onDateChange={this.handleInputChange('dates', type, date.name)}
+                        />
+                    ));
+                    return <ModalItemContainer key={dates}>{datesUI}</ModalItemContainer>;
+                }
+                case types.CHECKBOX:
+                    return (
+                        <ModalItemContainer key={label}>
+                            <Subheading>{label}</Subheading>
+                            <Checkbox
+                                status={value ? 'checked' : 'unchecked'}
+                                color="#6200ea"
+                                onPress={this.handleInputChange(name, type)}
+                            />
+                        </ModalItemContainer>
+                    );
+                default:
+                    return null;
+            }
+        });
+
+        return (
+            <Portal>
+                <Modal visible={modalOpen} onDismiss={this.toggleModal} contentContainerStyle={styles.ModalContainer}>
+                    <ModalContainer contentContainerStyle={styles.ModalContainer}>
+                        <>
+                            <Title>{`ADD ${type.toUpperCase()}`}</Title>
+                            {modalItems}
+                            <Button mode="outlined" onPress={this.saveInformation}>
+                                Save
+                            </Button>
+                            {this.renderError()}
+                        </>
+                    </ModalContainer>
+                </Modal>
+            </Portal>
+        );
     };
 
     renderList = () => {
@@ -84,14 +300,20 @@ class Specific extends Component {
                         }`}</DataTable.Cell>
                     </TableRow>
                     {item.description && item.description.length > 0 ? (
-                        <DescriptionConainer>
+                        <View>
                             <Paragraph>{item.description}</Paragraph>
-                        </DescriptionConainer>
+                        </View>
                     ) : null}
                 </DataTable>
             </ItemContainer>
         ));
         return items;
+    };
+
+    renderError = () => {
+        const { modalError } = this.state;
+        const { error, message } = modalError;
+        return <Toast visible={error} color="#CC0000" message={message} onDismiss={this.clearError} />;
     };
 
     render() {
@@ -102,6 +324,8 @@ class Specific extends Component {
                 {type === 'education' && education.length === 0 && <Empty>No Education Record!</Empty>}
                 {type === 'experience' && experience.length === 0 && <Empty>No experience Record!</Empty>}
                 {(education.length !== 0 || experience.length !== 0) && this.renderList()}
+                {this.renderAddModal()}
+                <FAB style={styles.FAB} icon="add-circle-outline" onPress={this.toggleModal} />
             </Container>
         );
     }
