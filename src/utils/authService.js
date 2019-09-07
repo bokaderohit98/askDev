@@ -38,6 +38,12 @@ class AuthService {
         store.dispatch(login(email, password, this));
     };
 
+    makeSecureRequest = async request => {
+        await this.validateToken();
+        const jwt = await this.getToken();
+        return request(jwt);
+    };
+
     logout = () => {
         store.dispatch({
             type: actions.LOGOUT

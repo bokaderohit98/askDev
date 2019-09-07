@@ -144,7 +144,7 @@ class CreateProfile extends Component {
         return !correct;
     };
 
-    saveProfile = () => {
+    saveProfile = jwt => {
         const { saveProfile, tabs } = this.state;
         this.setState({ saveProfile: { ...saveProfile, loading: true } });
         const requestData = tabs.reduce((data, item) => {
@@ -153,17 +153,11 @@ class CreateProfile extends Component {
             updated[name] = value;
             return updated;
         }, {});
-        this.authService
-            .validateToken()
-            .then(() => {
-                return this.authService.getToken();
-            })
-            .then(jwt => {
-                return axios.post(routes.profile, requestData, {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`
-                    }
-                });
+        axios
+            .post(routes.profile, requestData, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
             })
             .then(res => {
                 const { setProfile, navigation } = this.props;
@@ -190,6 +184,10 @@ class CreateProfile extends Component {
             });
     };
 
+    handleSaveButtonClick = () => {
+        this.authService.makeSecureRequest(this.saveProfile);
+    };
+
     closeScreen = () => {
         const { navigation } = this.props;
         navigation.goBack();
@@ -214,7 +212,7 @@ class CreateProfile extends Component {
                 <Message>Let&apos; save your profile!</Message>
                 <Button
                     mode="outlined"
-                    onPress={this.saveProfile}
+                    onPress={this.handleSaveButtonClick}
                     disabled={saveProfile.disabled}
                     loading={saveProfile.loading}
                 >
