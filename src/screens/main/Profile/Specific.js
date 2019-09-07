@@ -14,7 +14,8 @@ import {
     Button,
     Checkbox,
     Subheading,
-    Title
+    Title,
+    IconButton
 } from 'react-native-paper';
 import { Empty, Toast } from '../../../components';
 import modalSchema, { types } from './modalSchema';
@@ -94,7 +95,9 @@ class Specific extends Component {
             profile: {},
             isCurrentUser: false,
             modalOpen: false,
+            deleteModalOpen: false,
             modalData: modalSchema,
+            deleteData: '',
             modalError: {
                 error: false,
                 message: ''
@@ -102,7 +105,12 @@ class Specific extends Component {
             savingInformation: {
                 loading: false,
                 error: false,
-                errorMessage: ''
+                message: ''
+            },
+            deletingInformation: {
+                loading: false,
+                error: false,
+                message: ''
             }
         };
     }
@@ -116,10 +124,17 @@ class Specific extends Component {
         };
     }
 
-    toggleModal = () => {
-        const { modalOpen } = this.state;
+    toggleModal = (type, id) => () => {
+        let { modalOpen, deleteModalOpen, deleteData } = this.state;
+        if (type === 'create') modalOpen = !modalOpen;
+        else {
+            deleteModalOpen = !deleteModalOpen;
+            deleteData = id;
+        }
         this.setState({
-            modalOpen: !modalOpen
+            modalOpen,
+            deleteModalOpen,
+            deleteData
         });
     };
 
@@ -233,6 +248,48 @@ class Specific extends Component {
             });
     };
 
+    deleteInformation = jwt => {
+        const { type, setProfile } = this.props;
+        const { deleteData } = this.state;
+
+        this.setState({
+            deletingInformation: {
+                error: false,
+                message: '',
+                loading: true
+            }
+        });
+        const url = type === 'education' ? routes.deleteEducation : routes.deleteExperience;
+        axios
+            .delete(url(deleteData), {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            })
+            .then(res => {
+                const { setProfile } = this.props;
+                setProfile(res.data);
+                this.setState({
+                    deletingInformation: {
+                        loading: false,
+                        error: false,
+                        message: ''
+                    },
+                    deleteModalOpen: false,
+                    deleteData: ''
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    deletingInformation: {
+                        loading: false,
+                        error: true,
+                        message: 'Some error occurred'
+                    }
+                });
+            });
+    };
+
     clearError = () => {
         this.setState({
             modalError: {
@@ -240,6 +297,10 @@ class Specific extends Component {
                 message: ''
             },
             savingInformation: {
+                error: false,
+                message: ''
+            },
+            deletingInformation: {
                 error: false,
                 message: ''
             }
@@ -250,13 +311,15 @@ class Specific extends Component {
         this.authService.makeSecureRequest(this.saveInformation);
     };
 
+    handleDeleteButtonClick = () => {
+        this.authService.makeSecureRequest(this.deleteInformation);
+    };
+
     renderAddModal = () => {
         const { type } = this.props;
         const { modalOpen, modalData, savingInformation } = this.state;
         const { loading } = savingInformation;
         const currentModal = modalData[type];
-
-        console.log('***********************', loading);
 
         const modalItems = Object.keys(currentModal).map(key => {
             const currentItem = currentModal[key];
@@ -329,7 +392,7 @@ class Specific extends Component {
             <Portal>
                 <Modal
                     visible={modalOpen}
-                    onDismiss={loading ? () => {} : this.toggleModal}
+                    onDismiss={loading ? () => {} : this.toggleModal('create')}
                     contentContainerStyle={styles.ModalContainer}
                 >
                     <ModalContainer contentContainerStyle={styles.ModalContainer}>
@@ -339,7 +402,6 @@ class Specific extends Component {
                             <Button mode="outlined" onPress={this.handleSaveButtonClick} loading={loading}>
                                 Save
                             </Button>
-                            {this.renderError()}
                         </>
                     </ModalContainer>
                 </Modal>
@@ -347,8 +409,34 @@ class Specific extends Component {
         );
     };
 
+    renderDeleteModal = () => {
+        const { deleteModalOpen, deletingInformation } = this.state;
+        const { loading } = deletingInformation;
+        const { type } = this.props;
+        return (
+            <Portal>
+                <Modal
+                    visible={deleteModalOpen || loading}
+                    contentContainerStyle={styles.ModalContainer}
+                    onDismiss={loading ? () => {} : this.toggleModal('delete')}
+                >
+                    <ModalContainer contentContainerStyle={styles.ModalContainer}>
+                        <Subheading style={{ marginBottom: 10 }}>
+                            {`Are you sure you want to delete this ${
+                                type === 'experience' ? 'experience' : 'education'
+                            }? This can't' be undone`}
+                        </Subheading>
+                        <Button mode="outlined" loading={loading} onPress={this.handleDeleteButtonClick}>
+                            Delete
+                        </Button>
+                    </ModalContainer>
+                </Modal>
+            </Portal>
+        );
+    };
+
     renderList = () => {
-        const { profile } = this.state;
+        const { profile, isCurrentUser } = this.state;
         const { type } = this.props;
         const isEducation = type === 'education';
         const iteratable = isEducation ? profile.education : profile.experience;
@@ -378,6 +466,17 @@ class Specific extends Component {
                             <Paragraph>{item.description}</Paragraph>
                         </View>
                     ) : null}
+                    {isCurrentUser && (
+                        <TableRow style={{ justifyContent: 'flex-end' }}>
+                            <IconButton
+                                icon="delete"
+                                style={{ backgroundColor: '#0000' }}
+                                size={24}
+                                color="#d50000"
+                                onPress={this.toggleModal('delete', item._id)}
+                            />
+                        </TableRow>
+                    )}
                 </DataTable>
             </ItemContainer>
         ));
@@ -385,19 +484,22 @@ class Specific extends Component {
     };
 
     renderError = () => {
-        const { modalError: modal, savingInformation } = this.state;
+        const { modalError: modal, savingInformation, deletingInformation } = this.state;
         const { error: savingInformationError, message: savingInformationMessage } = savingInformation;
         const { error: modalError, message: modalErrorMessage } = modal;
-        const error = savingInformationError || modalError;
+        const { error: deleteError, message: deleteMessage } = deletingInformation;
+        const error = savingInformationError || modalError || deleteError;
         let message = '';
 
         if (savingInformationError) message = savingInformationMessage;
         else if (modalError) message = modalErrorMessage;
+        else if (deleteError) message = deleteMessage;
 
         return <Toast visible={error} color="#CC0000" message={message} onDismiss={this.clearError} />;
     };
 
     render() {
+        const { isCurrentUser, deleteData } = this.state;
         const { type, profile } = this.props;
         const { education, experience } = profile;
         return (
@@ -406,9 +508,13 @@ class Specific extends Component {
                     {type === 'education' && education.length === 0 && <Empty>No Education Record!</Empty>}
                     {type === 'experience' && experience.length === 0 && <Empty>No experience Record!</Empty>}
                     {(education.length !== 0 || experience.length !== 0) && this.renderList()}
-                    {this.renderAddModal()}
+                    {isCurrentUser && this.renderAddModal()}
+                    {isCurrentUser && this.renderDeleteModal()}
+                    {this.renderError()}
                 </Container>
-                <FAB style={styles.FAB} icon="add-circle-outline" onPress={this.toggleModal} />
+                {isCurrentUser && (
+                    <FAB style={styles.FAB} icon="add-circle-outline" onPress={this.toggleModal('create')} />
+                )}
             </View>
         );
     }

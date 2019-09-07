@@ -5,5 +5,7 @@ export default {
     fetchDevelopers: '/profile/all',
     fetchGithubRepos: username => `https://api.github.com/users/${username}/repos`,
     saveExperience: '/profile/experience',
-    saveEducation: '/profile/education'
+    saveEducation: '/profile/education',
+    deleteExperience: _id => `/profile/experience/${_id}`,
+    deleteEducation: _id => `/profile/education/${_id}`
 };
