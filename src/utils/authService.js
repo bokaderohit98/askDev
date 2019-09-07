@@ -49,6 +49,7 @@ class AuthService {
             type: actions.LOGOUT
         });
         this.storage.clear();
+        this.logger();
     };
 
     logger = async () => {

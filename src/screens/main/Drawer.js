@@ -5,6 +5,7 @@ import { NavigationActions } from 'react-navigation';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import drawerBackground from '../../assets/drawerBackground.png';
+import AuthService from '../../utils/authService';
 
 const Container = styled.View`
     display: flex;
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
 class Drawer extends Component {
     constructor(props) {
         super(props);
+        this.authService = new AuthService();
         this.routes = ['Feed', 'Developers'];
     }
 
@@ -63,6 +65,12 @@ class Drawer extends Component {
         if (!profile || Object.keys(profile).length === 0) return;
         navigation.closeDrawer();
         navigation.navigate('Profile', { profile, isCurrentUser: true });
+    };
+
+    logout = () => {
+        const { authService, navigateToAuthentication } = this;
+        authService.logout();
+        navigateToAuthentication();
     };
 
     renderNavigationMenu = () => {
@@ -104,6 +112,20 @@ class Drawer extends Component {
                 </TouchableRipple>
 
                 {this.renderNavigationMenu()}
+                {isAuthenticated && (
+                    <View style={{ padding: 16 }}>
+                        <Button
+                            color="#000000"
+                            onPress={this.logout}
+                            contentStyle={{
+                                height: 60,
+                                alignSelf: 'flex-start'
+                            }}
+                        >
+                            Logout
+                        </Button>
+                    </View>
+                )}
                 <FooterContainer>
                     <Subheading>Made for the Community</Subheading>
                     <Avatar.Icon icon="favorite" size={16} style={{ marginLeft: 8 }} />
