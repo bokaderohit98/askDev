@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { StyleSheet, Text, Dimensions, View } from 'react-native';
+import { StyleSheet, Dimensions, View } from 'react-native';
+import { connect } from 'react-redux';
 import DateTimePicker from 'react-native-datepicker';
 import {
     DataTable,
@@ -17,6 +18,10 @@ import {
 } from 'react-native-paper';
 import { Empty, Toast } from '../../../components';
 import modalSchema, { types } from './modalSchema';
+import routes from '../../../utils/routes';
+import axios from '../../../utils/axios';
+import AuthService from '../../../utils/authService';
+import { setProfile } from '../../../redux/api';
 
 const Container = styled.ScrollView`
     display: flex;
@@ -84,6 +89,7 @@ const styles = StyleSheet.create({
 class Specific extends Component {
     constructor(props) {
         super(props);
+        this.authService = new AuthService();
         this.state = {
             profile: {},
             isCurrentUser: false,
@@ -92,6 +98,11 @@ class Specific extends Component {
             modalError: {
                 error: false,
                 message: ''
+            },
+            savingInformation: {
+                loading: false,
+                error: false,
+                errorMessage: ''
             }
         };
     }
@@ -153,6 +164,7 @@ class Specific extends Component {
         const { type } = this.props;
         const currentData = modalData[type];
         let res = {};
+        const requestData = {};
 
         for (let i = 0; i < currentData.length; i += 1) {
             const item = currentData[i];
@@ -161,20 +173,64 @@ class Specific extends Component {
                 const { value: from } = item.dates[0];
                 const { value: to, disabled } = item.dates[1];
                 res = validation(from, to, disabled);
-            } else res = validation(value);
+                requestData.from = from;
+                requestData.to = to;
+            } else {
+                res = validation(value);
+                requestData[name] = value;
+            }
             if (res.error) {
                 this.setState({
                     modalError: res
                 });
-                return false;
+                return { valid: false, requestData: {} };
             }
         }
-        return true;
+        return { valid: true, requestData };
     };
 
-    saveInformation = () => {
-        if (!this.validateModal()) return;
-        console.log('saving');
+    saveInformation = jwt => {
+        const { type } = this.props;
+        const { valid, requestData } = this.validateModal();
+        const { savingInformation } = this.state;
+
+        if (!valid) return;
+
+        this.setState({
+            savingInformation: {
+                ...savingInformation,
+                loading: true
+            }
+        });
+        const url = type === 'education' ? routes.saveEducation : routes.saveExperience;
+        axios
+            .post(url, requestData, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            })
+            .then(res => {
+                const { setProfile } = this.props;
+                setProfile(res.data);
+                this.setState({
+                    savingInformation: {
+                        loading: false,
+                        error: false,
+                        message: ''
+                    },
+                    modalData: modalSchema,
+                    modalOpen: false
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    savingInformation: {
+                        loading: false,
+                        error: true,
+                        message: 'Some error occurred'
+                    }
+                });
+            });
     };
 
     clearError = () => {
@@ -182,14 +238,25 @@ class Specific extends Component {
             modalError: {
                 error: false,
                 message: ''
+            },
+            savingInformation: {
+                error: false,
+                message: ''
             }
         });
     };
 
+    handleSaveButtonClick = () => {
+        this.authService.makeSecureRequest(this.saveInformation);
+    };
+
     renderAddModal = () => {
         const { type } = this.props;
-        const { modalOpen, modalData } = this.state;
+        const { modalOpen, modalData, savingInformation } = this.state;
+        const { loading } = savingInformation;
         const currentModal = modalData[type];
+
+        console.log('***********************', loading);
 
         const modalItems = Object.keys(currentModal).map(key => {
             const currentItem = currentModal[key];
@@ -199,6 +266,7 @@ class Specific extends Component {
                 case types.INPUT:
                     return (
                         <TextInput
+                            disabled={loading}
                             key={label}
                             placeholder={label}
                             value={value}
@@ -209,6 +277,7 @@ class Specific extends Component {
                 case types.MULTILINE_INPUT:
                     return (
                         <TextInput
+                            disabled={loading}
                             key={label}
                             placeholder={label}
                             value={value}
@@ -222,7 +291,7 @@ class Specific extends Component {
                     const maxDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
                     const datesUI = dates.map((date, index) => (
                         <DateTimePicker
-                            disabled={date.disabled}
+                            disabled={date.disabled || loading}
                             style={{ marginRight: index === 0 ? 24 : 0 }}
                             key={date.label}
                             placeholder={date.label}
@@ -244,6 +313,7 @@ class Specific extends Component {
                         <ModalItemContainer key={label}>
                             <Subheading>{label}</Subheading>
                             <Checkbox
+                                disabled={loading}
                                 status={value ? 'checked' : 'unchecked'}
                                 color="#6200ea"
                                 onPress={this.handleInputChange(name, type)}
@@ -257,12 +327,16 @@ class Specific extends Component {
 
         return (
             <Portal>
-                <Modal visible={modalOpen} onDismiss={this.toggleModal} contentContainerStyle={styles.ModalContainer}>
+                <Modal
+                    visible={modalOpen}
+                    onDismiss={loading ? () => {} : this.toggleModal}
+                    contentContainerStyle={styles.ModalContainer}
+                >
                     <ModalContainer contentContainerStyle={styles.ModalContainer}>
                         <>
                             <Title>{`ADD ${type.toUpperCase()}`}</Title>
                             {modalItems}
-                            <Button mode="outlined" onPress={this.saveInformation}>
+                            <Button mode="outlined" onPress={this.handleSaveButtonClick} loading={loading}>
                                 Save
                             </Button>
                             {this.renderError()}
@@ -311,8 +385,15 @@ class Specific extends Component {
     };
 
     renderError = () => {
-        const { modalError } = this.state;
-        const { error, message } = modalError;
+        const { modalError: modal, savingInformation } = this.state;
+        const { error: savingInformationError, message: savingInformationMessage } = savingInformation;
+        const { error: modalError, message: modalErrorMessage } = modal;
+        const error = savingInformationError || modalError;
+        let message = '';
+
+        if (savingInformationError) message = savingInformationMessage;
+        else if (modalError) message = modalErrorMessage;
+
         return <Toast visible={error} color="#CC0000" message={message} onDismiss={this.clearError} />;
     };
 
@@ -320,15 +401,22 @@ class Specific extends Component {
         const { type, profile } = this.props;
         const { education, experience } = profile;
         return (
-            <Container contentContainerStyle={{ flex: 1 }}>
-                {type === 'education' && education.length === 0 && <Empty>No Education Record!</Empty>}
-                {type === 'experience' && experience.length === 0 && <Empty>No experience Record!</Empty>}
-                {(education.length !== 0 || experience.length !== 0) && this.renderList()}
-                {this.renderAddModal()}
+            <View style={{ display: 'flex', flex: 1 }}>
+                <Container contentContainerStyle={{ flexGrow: 1 }}>
+                    {type === 'education' && education.length === 0 && <Empty>No Education Record!</Empty>}
+                    {type === 'experience' && experience.length === 0 && <Empty>No experience Record!</Empty>}
+                    {(education.length !== 0 || experience.length !== 0) && this.renderList()}
+                    {this.renderAddModal()}
+                </Container>
                 <FAB style={styles.FAB} icon="add-circle-outline" onPress={this.toggleModal} />
-            </Container>
+            </View>
         );
     }
 }
 
-export default Specific;
+const mapStateToProps = state => ({});
+
+export default connect(
+    mapStateToProps,
+    { setProfile }
+)(Specific);
