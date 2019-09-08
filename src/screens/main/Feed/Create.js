@@ -22,25 +22,25 @@ const PostContainer = styled.View`
 
 class Create extends Component {
     render() {
+        const { user, loading, value, handleInputChange, handlePostButtonClick } = this.props;
         return (
             <Container>
                 <PostContainer>
-                    <Avatar.Image
-                        source={{
-                            uri:
-                                'https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/styles/full_width/public/thumbnails/image/placeholder-profile_3.png'
-                        }}
-                        style={{ marginRight: 30 }}
-                    />
+                    <Avatar.Image source={{ uri: user ? user.avatar : null }} style={{ marginRight: 30 }} />
                     <TextInput
+                        disabled={loading}
                         placeholder="Ask Something..."
                         multiline
                         numberOfLines={5}
                         mode="outlined"
                         style={{ height: 100, flex: 1 }}
+                        onChangeText={handleInputChange}
+                        value={value}
                     />
                 </PostContainer>
-                <Button mode="outlined">Post</Button>
+                <Button mode="outlined" onPress={handlePostButtonClick} loading={loading}>
+                    Post
+                </Button>
             </Container>
         );
     }

@@ -8,5 +8,6 @@ export default {
     saveEducation: '/profile/education',
     deleteExperience: _id => `/profile/experience/${_id}`,
     deleteEducation: _id => `/profile/education/${_id}`,
-    fetchPosts: '/posts'
+    fetchPosts: '/posts',
+    savePost: '/posts'
 };

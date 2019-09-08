@@ -67,8 +67,6 @@ export const fetchDevelopers = () => dispatch => {
 };
 
 export const fetchPosts = jwt => dispatch => {
-    console.log('******************************************** called');
-    console.log('**********************************************', dispatch);
     dispatch({ type: actions.FETCH_POSTS_BEGIN });
     axios
         .get(routes.fetchPosts, {
