@@ -1,7 +1,6 @@
 import React from 'react';
 import { DoubleBounce } from 'react-native-loader';
 import styled from 'styled-components';
-import { View } from 'react-native';
 
 const Container = styled.View`
     display: flex;

@@ -66,13 +66,19 @@ export const fetchDevelopers = () => dispatch => {
         });
 };
 
-export const fetchPosts = () => dispatch => {
+export const fetchPosts = jwt => dispatch => {
+    console.log('******************************************** called');
+    console.log('**********************************************', dispatch);
     dispatch({ type: actions.FETCH_POSTS_BEGIN });
     axios
-        .get(routes.fetchPosts)
+        .get(routes.fetchPosts, {
+            headers: {
+                Authorization: `Bearer ${jwt}`
+            }
+        })
         .then(res => {
             dispatch({
-                type: actions.FETCH_DEVELOPERS_SUCCESS,
+                type: actions.FETCH_POSTS_SUCCESS,
                 payload: {
                     posts: res.data
                 }

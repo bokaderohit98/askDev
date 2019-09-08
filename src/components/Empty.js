@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { View, Image } from 'react-native';
+import { Image } from 'react-native';
 import { Title } from 'react-native-paper';
 import EmptyImage from '../assets/empty.png';
 

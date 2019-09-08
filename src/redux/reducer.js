@@ -52,7 +52,9 @@ const reducer = (state = {}, { type, payload }) => {
         case actions.FETCH_POSTS_BEGIN:
             return {
                 ...state,
-                postsLoading: true
+                postsLoading: true,
+                postsError: false,
+                posts: []
             };
         case actions.FETCH_POSTS_SUCCESS:
             return {
