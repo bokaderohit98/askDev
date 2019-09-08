@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { View, Text } from 'react-native';
+import Create from './Create';
+import Posts from './Posts';
 
 const Container = styled.View`
     display: flex;
     flex: 1;
-    justify-content: center;
-    align-items: center;
+    background: #eeeeee;
 `;
 
 class Feed extends Component {
     render() {
         return (
             <Container>
-                <Text>feed</Text>
+                <Create />
+                <Posts />
             </Container>
         );
     }

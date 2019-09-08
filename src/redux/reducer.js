@@ -49,6 +49,25 @@ const reducer = (state = {}, { type, payload }) => {
                 developersError: true,
                 developersErrorMessage: payload.message
             };
+        case actions.FETCH_POSTS_BEGIN:
+            return {
+                ...state,
+                postsLoading: true
+            };
+        case actions.FETCH_POSTS_SUCCESS:
+            return {
+                ...state,
+                postsLoading: false,
+                posts: payload.posts
+            };
+        case actions.FETCH_POSTS_ERROR:
+            return {
+                ...state,
+                postsLoading: false,
+                posts: [],
+                postsError: true,
+                postsErrorMessage: payload.message
+            };
         case actions.CLEAR_SUCCESS:
             return { ...state };
         case actions.CLEAR_ERROR:

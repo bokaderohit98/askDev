@@ -66,6 +66,28 @@ export const fetchDevelopers = () => dispatch => {
         });
 };
 
+export const fetchPosts = () => dispatch => {
+    dispatch({ type: actions.FETCH_POSTS_BEGIN });
+    axios
+        .get(routes.fetchPosts)
+        .then(res => {
+            dispatch({
+                type: actions.FETCH_DEVELOPERS_SUCCESS,
+                payload: {
+                    posts: res.data
+                }
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: actions.FETCH_POSTS_ERROR,
+                payload: {
+                    message: 'Some error occurred'
+                }
+            });
+        });
+};
+
 export const setProfile = profile => dispatch => {
     dispatch({
         type: actions.FETCH_PROFILE_SUCCESS,
