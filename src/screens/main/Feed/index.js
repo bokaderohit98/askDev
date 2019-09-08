@@ -55,7 +55,7 @@ class Feed extends Component {
 
     componentDidMount() {
         const { fetchPosts } = this.props;
-        this.authService.makeSecureRequest(fetchPosts);
+        fetchPosts();
     }
 
     toggleDeleteModal = id => () => {
@@ -121,7 +121,7 @@ class Feed extends Component {
                         loading: false
                     }
                 });
-                this.authService.makeSecureRequest(fetchPosts);
+                fetchPosts();
             })
             .catch(err => {
                 this.setState({
@@ -164,7 +164,7 @@ class Feed extends Component {
                     },
                     showDeleteModal: false
                 });
-                fetchPosts(jwt);
+                fetchPosts();
             })
             .catch(err => {
                 this.setState({

@@ -44,7 +44,7 @@ class Drawer extends Component {
     constructor(props) {
         super(props);
         this.authService = new AuthService();
-        this.routes = [{ name: 'Feed', authRequired: true }, { name: 'Developers', authRequired: false }];
+        this.routes = ['Feed', 'Developers'];
     }
 
     navigateToScreen = routeName => () => {
@@ -74,23 +74,19 @@ class Drawer extends Component {
     };
 
     renderNavigationMenu = () => {
-        const { isAuthenticated } = this.props;
-        const navigationItems = this.routes.map(
-            route =>
-                (!route.authRequired || (route.authRequired && isAuthenticated)) && (
-                    <Button
-                        key={route.name}
-                        color="#000000"
-                        onPress={this.navigateToScreen(route.name)}
-                        contentStyle={{
-                            height: 60,
-                            alignSelf: 'flex-start'
-                        }}
-                    >
-                        {route.name}
-                    </Button>
-                )
-        );
+        const navigationItems = this.routes.map(route => (
+            <Button
+                key={route}
+                color="#000000"
+                onPress={this.navigateToScreen(route)}
+                contentStyle={{
+                    height: 60,
+                    alignSelf: 'flex-start'
+                }}
+            >
+                {route}
+            </Button>
+        ));
 
         return <NavigationItemContainer>{navigationItems}</NavigationItemContainer>;
     };
