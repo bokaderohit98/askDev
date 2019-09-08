@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Button, Avatar, TextInput } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 
 const Container = styled.View`
     margin-bottom: 32px;
@@ -8,6 +8,7 @@ const Container = styled.View`
     justify-content: space-around;
     align-items: center;
     background: #ffffff;
+    min-height: 100px;
 `;
 
 const PostContainer = styled.View`
@@ -22,24 +23,40 @@ const PostContainer = styled.View`
 
 class Create extends Component {
     render() {
-        const { user, loading, value, handleInputChange, handlePostButtonClick } = this.props;
+        const {
+            loading,
+            value,
+            isAuthenticated,
+            handleInputChange,
+            handlePostButtonClick,
+            navigateToAuthentication
+        } = this.props;
         return (
             <Container>
-                <PostContainer>
-                    <TextInput
-                        disabled={loading}
-                        placeholder="Ask Something..."
-                        multiline
-                        numberOfLines={5}
-                        mode="outlined"
-                        style={{ height: 100, flex: 1 }}
-                        onChangeText={handleInputChange}
-                        value={value}
-                    />
-                </PostContainer>
-                <Button mode="outlined" onPress={handlePostButtonClick} loading={loading}>
-                    Post
-                </Button>
+                {isAuthenticated && (
+                    <>
+                        <PostContainer>
+                            <TextInput
+                                disabled={loading}
+                                placeholder="Ask Something..."
+                                multiline
+                                numberOfLines={5}
+                                mode="outlined"
+                                style={{ height: 100, flex: 1 }}
+                                onChangeText={handleInputChange}
+                                value={value}
+                            />
+                        </PostContainer>
+                        <Button mode="outlined" onPress={handlePostButtonClick} loading={loading}>
+                            Post
+                        </Button>
+                    </>
+                )}
+                {!isAuthenticated && (
+                    <Button mode="outlined" onPress={navigateToAuthentication}>
+                        Login to Post
+                    </Button>
+                )}
             </Container>
         );
     }

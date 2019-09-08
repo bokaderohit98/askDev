@@ -216,6 +216,11 @@ class Feed extends Component {
         this.authService.makeSecureRequest(this.toggleLike(id, liked));
     };
 
+    navigateToAuthentication = () => {
+        const { navigation } = this.props;
+        navigation.replace('Authentication');
+    };
+
     clearError = () => {
         const { post, deletePost } = this.state;
         this.setState({
@@ -270,7 +275,7 @@ class Feed extends Component {
     };
 
     render() {
-        const { posts, user } = this.props;
+        const { posts, user, isAuthenticated } = this.props;
         const { post } = this.state;
         return (
             <Container>
@@ -280,12 +285,16 @@ class Feed extends Component {
                     handleInputChange={this.handleInputChange}
                     handlePostButtonClick={this.handlePostButtonClick}
                     loading={post.loading}
+                    isAuthenticated={isAuthenticated}
+                    navigateToAuthentication={this.navigateToAuthentication}
                 />
                 <Posts
                     {...posts}
                     user={user}
                     handleLikeButtonClick={this.handleLikeButtonClick}
                     toggleDeleteModal={this.toggleDeleteModal}
+                    isAuthenticated={isAuthenticated}
+                    navigateToAuthentication={this.navigateToAuthentication}
                 />
                 {this.renderDeleteModal()}
                 {this.renderError()}
@@ -301,7 +310,8 @@ const mapStateToProps = state => ({
         error: state.postsError,
         message: state.postsErrorMessage
     },
-    user: state.user
+    user: state.user,
+    isAuthenticated: state.isAuthenticated
 });
 
 export default connect(

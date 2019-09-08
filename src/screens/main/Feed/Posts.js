@@ -44,14 +44,17 @@ const PostFooter = styled.View`
 
 class Posts extends Component {
     renderPostFooter = (index, post, user) => {
-        const { handleLikeButtonClick } = this.props;
+        const { isAuthenticated, handleLikeButtonClick, navigateToAuthentication } = this.props;
         const { likes, comments } = post;
         const nlikes = likes.length;
         const ncomments = comments.length;
-        const liked = likes.some(like => like.user === user.id);
+        const liked = isAuthenticated && likes.some(like => like.user === user.id);
         return (
             <PostFooter>
-                <Button color={liked ? '#0000ff' : '#777777'} onPress={handleLikeButtonClick(index, post._id)}>
+                <Button
+                    color={liked ? '#0000ff' : '#777777'}
+                    onPress={isAuthenticated ? handleLikeButtonClick(index, post._id) : navigateToAuthentication}
+                >
                     Like
                 </Button>
                 <View
@@ -72,7 +75,7 @@ class Posts extends Component {
     };
 
     renderPosts = () => {
-        const { posts, user, toggleDeleteModal } = this.props;
+        const { posts, user, isAuthenticated, toggleDeleteModal } = this.props;
         return posts.map((post, index) => {
             const { _id, avatar, name, text } = post;
             return (
@@ -82,7 +85,7 @@ class Posts extends Component {
                             <Avatar.Image src={{ uri: avatar }} size={32} style={{ marginRight: 16 }} />
                             <Subheading>{name}</Subheading>
                         </View>
-                        {post.user === user.id && (
+                        {isAuthenticated && post.user === user.id && (
                             <IconButton icon="close" size={24} color="#d50000" onPress={toggleDeleteModal(_id)} />
                         )}
                     </PostHeader>
