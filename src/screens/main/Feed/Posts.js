@@ -24,7 +24,7 @@ const PostContainer = styled.View`
 
 const PostHeader = styled.View`
     display: flex;
-    padding: 4px;
+    padding: 8px;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -72,7 +72,7 @@ class Posts extends Component {
     };
 
     renderPosts = () => {
-        const { posts, user } = this.props;
+        const { posts, user, toggleDeleteModal } = this.props;
         return posts.map((post, index) => {
             const { _id, avatar, name, text } = post;
             return (
@@ -82,7 +82,9 @@ class Posts extends Component {
                             <Avatar.Image src={{ uri: avatar }} size={32} style={{ marginRight: 16 }} />
                             <Subheading>{name}</Subheading>
                         </View>
-                        <IconButton icon="more-vert" size={24} color="#777777" />
+                        {post.user === user.id && (
+                            <IconButton icon="close" size={24} color="#d50000" onPress={toggleDeleteModal(_id)} />
+                        )}
                     </PostHeader>
                     <Subheading style={{ padding: 16, minHeight: 100 }}>{text}</Subheading>
                     {this.renderPostFooter(index, post, user)}
@@ -105,7 +107,7 @@ class Posts extends Component {
                         <Error />
                     </UtilContainer>
                 )}
-                {!loading && !error && (!posts || posts.length === 0) && (
+                {!loading && !error && posts && posts.length === 0 && (
                     <UtilContainer>
                         <Empty>No posts found!</Empty>
                     </UtilContainer>

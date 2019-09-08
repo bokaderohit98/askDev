@@ -11,5 +11,6 @@ export default {
     fetchPosts: '/posts',
     savePost: '/posts',
     likePost: _id => `/posts/like/${_id}`,
-    unlikePost: _id => `/posts/unlike/${_id}`
+    unlikePost: _id => `/posts/unlike/${_id}`,
+    deletePost: _id => `/posts/${_id}`
 };
