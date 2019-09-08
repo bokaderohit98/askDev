@@ -26,7 +26,6 @@ class Create extends Component {
         return (
             <Container>
                 <PostContainer>
-                    <Avatar.Image source={{ uri: user ? user.avatar : null }} style={{ marginRight: 30 }} />
                     <TextInput
                         disabled={loading}
                         placeholder="Ask Something..."

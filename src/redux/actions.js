@@ -11,6 +11,7 @@ export const FETCH_POSTS_BEGIN = 'FETCH_POSTS_BEGIN';
 export const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
 export const FETCH_POSTS_ERROR = 'FETCH_POSTS_ERROR';
 
+export const LIKE_POST = 'LIKE_POST';
 export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
 export const LOGOUT = 'LOGOUT';

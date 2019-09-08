@@ -99,6 +99,15 @@ export const setProfile = profile => dispatch => {
     });
 };
 
+export const likePost = posts => dispatch => {
+    dispatch({
+        type: actions.LIKE_POST,
+        payload: {
+            posts
+        }
+    });
+};
+
 export const clearSuccess = () => dispatch => {
     dispatch({
         type: actions.CLEAR_SUCCESS

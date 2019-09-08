@@ -9,5 +9,7 @@ export default {
     deleteExperience: _id => `/profile/experience/${_id}`,
     deleteEducation: _id => `/profile/education/${_id}`,
     fetchPosts: '/posts',
-    savePost: '/posts'
+    savePost: '/posts',
+    likePost: _id => `/posts/like/${_id}`,
+    unlikePost: _id => `/posts/unlike/${_id}`
 };

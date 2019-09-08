@@ -18,7 +18,7 @@ const Main = createDrawerNavigator(
         }
     },
     {
-        initialRouteName: 'Feed',
+        initialRouteName: 'Developers',
         drawerWidth: 300,
         drawerType: 'slide',
         edgeWidth: 20,

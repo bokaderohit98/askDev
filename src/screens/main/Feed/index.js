@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import Create from './Create';
 import Posts from './Posts';
-import { fetchPosts } from '../../../redux/api';
+import { fetchPosts, likePost } from '../../../redux/api';
 import AuthService from '../../../utils/authService';
 import { Toast } from '../../../components';
 import axios from '../../../utils/axios';
@@ -99,7 +99,41 @@ class Feed extends Component {
     };
 
     handlePostButtonClick = () => {
+        Keyboard.dismiss();
         this.authService.makeSecureRequest(this.savePost);
+    };
+
+    toggleLike = (id, liked) => jwt => {
+        const url = liked ? routes.unlikePost(id) : routes.likePost(id);
+        axios
+            .post(
+                url,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                }
+            )
+            .then(res => {})
+            .catch(err => {});
+    };
+
+    handleLikeButtonClick = (index, id) => () => {
+        let { posts, user, likePost } = this.props;
+        posts = posts.posts;
+        const updatedPosts = [...posts];
+        let liked = false;
+
+        const updatedPost = { ...updatedPosts[index] };
+        if (updatedPost.likes.some(like => like.user === user.id)) {
+            liked = true;
+            updatedPost.likes = updatedPost.likes.filter(like => like.user !== user.id);
+        } else updatedPost.likes.push({ user: user.id });
+        updatedPosts[index] = updatedPost;
+
+        likePost(updatedPosts);
+        this.authService.makeSecureRequest(this.toggleLike(id, liked));
     };
 
     clearError = () => {
@@ -128,19 +162,17 @@ class Feed extends Component {
         const { posts, user } = this.props;
         const { post } = this.state;
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <Container>
-                    <Create
-                        user={user}
-                        value={post.value}
-                        handleInputChange={this.handleInputChange}
-                        handlePostButtonClick={this.handlePostButtonClick}
-                        loading={post.loading}
-                    />
-                    <Posts {...posts} user={user} />
-                    {this.renderError()}
-                </Container>
-            </TouchableWithoutFeedback>
+            <Container>
+                <Create
+                    user={user}
+                    value={post.value}
+                    handleInputChange={this.handleInputChange}
+                    handlePostButtonClick={this.handlePostButtonClick}
+                    loading={post.loading}
+                />
+                <Posts {...posts} user={user} handleLikeButtonClick={this.handleLikeButtonClick} />
+                {this.renderError()}
+            </Container>
         );
     }
 }
@@ -157,5 +189,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { fetchPosts }
+    { fetchPosts, likePost }
 )(Feed);

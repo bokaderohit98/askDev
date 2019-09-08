@@ -70,6 +70,11 @@ const reducer = (state = {}, { type, payload }) => {
                 postsError: true,
                 postsErrorMessage: payload.message
             };
+        case actions.LIKE_POST:
+            return {
+                ...state,
+                posts: payload.posts
+            };
         case actions.CLEAR_SUCCESS:
             return { ...state };
         case actions.CLEAR_ERROR:

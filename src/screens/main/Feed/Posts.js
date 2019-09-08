@@ -43,13 +43,17 @@ const PostFooter = styled.View`
 `;
 
 class Posts extends Component {
-    renderPostFooter = post => {
+    renderPostFooter = (index, post, user) => {
+        const { handleLikeButtonClick } = this.props;
         const { likes, comments } = post;
         const nlikes = likes.length;
         const ncomments = comments.length;
+        const liked = likes.some(like => like.user === user.id);
         return (
             <PostFooter>
-                <Button color="#777777">Like</Button>
+                <Button color={liked ? '#0000ff' : '#777777'} onPress={handleLikeButtonClick(index, post._id)}>
+                    Like
+                </Button>
                 <View
                     style={{
                         display: 'flex',
@@ -68,8 +72,8 @@ class Posts extends Component {
     };
 
     renderPosts = () => {
-        const { posts } = this.props;
-        return posts.map(post => {
+        const { posts, user } = this.props;
+        return posts.map((post, index) => {
             const { _id, avatar, name, text } = post;
             return (
                 <PostContainer key={_id}>
@@ -81,7 +85,7 @@ class Posts extends Component {
                         <IconButton icon="more-vert" size={24} color="#777777" />
                     </PostHeader>
                     <Subheading style={{ padding: 16, minHeight: 100 }}>{text}</Subheading>
-                    {this.renderPostFooter(post)}
+                    {this.renderPostFooter(index, post, user)}
                 </PostContainer>
             );
         });
