@@ -5,6 +5,7 @@ import { Keyboard, StyleSheet, Dimensions } from 'react-native';
 import { Portal, Modal, Subheading, Button } from 'react-native-paper';
 import Create from './Create';
 import Posts from './Posts';
+import Comments from './Comments';
 import { fetchPosts, likePost } from '../../../redux/api';
 import AuthService from '../../../utils/authService';
 import { Toast } from '../../../components';
@@ -49,7 +50,15 @@ class Feed extends Component {
                 error: false,
                 message: ''
             },
-            showDeleteModal: false
+            comment: {
+                data: [],
+                value: '',
+                loading: false,
+                error: false,
+                message: ''
+            },
+            showDeleteModal: false,
+            showComments: false
         };
     }
 
@@ -68,6 +77,25 @@ class Feed extends Component {
                 ...deletePost,
                 data
             }
+        });
+    };
+
+    toggleComments = index => () => {
+        let { posts } = this.props;
+        const { comment, showComments } = this.state;
+        posts = posts.posts;
+
+        let data = [];
+        if (index > -1) data = posts[index].comments;
+
+        this.setState({
+            comment: {
+                ...comment,
+                data,
+                value: '',
+                error: false
+            },
+            showComments: !showComments
         });
     };
 
@@ -276,27 +304,36 @@ class Feed extends Component {
 
     render() {
         const { posts, user, isAuthenticated } = this.props;
-        const { post } = this.state;
+        const { post, showComments, comment } = this.state;
+        console.log('************************', comment);
         return (
             <Container>
-                <Create
-                    user={user}
-                    value={post.value}
-                    handleInputChange={this.handleInputChange}
-                    handlePostButtonClick={this.handlePostButtonClick}
-                    loading={post.loading}
-                    isAuthenticated={isAuthenticated}
-                    navigateToAuthentication={this.navigateToAuthentication}
-                />
-                <Posts
-                    {...posts}
-                    user={user}
-                    handleLikeButtonClick={this.handleLikeButtonClick}
-                    toggleDeleteModal={this.toggleDeleteModal}
-                    isAuthenticated={isAuthenticated}
-                    navigateToAuthentication={this.navigateToAuthentication}
-                />
-                {this.renderDeleteModal()}
+                {!showComments && (
+                    <>
+                        <Create
+                            user={user}
+                            value={post.value}
+                            handleInputChange={this.handleInputChange}
+                            handlePostButtonClick={this.handlePostButtonClick}
+                            loading={post.loading}
+                            isAuthenticated={isAuthenticated}
+                            navigateToAuthentication={this.navigateToAuthentication}
+                        />
+                        <Posts
+                            {...posts}
+                            user={user}
+                            handleLikeButtonClick={this.handleLikeButtonClick}
+                            toggleDeleteModal={this.toggleDeleteModal}
+                            isAuthenticated={isAuthenticated}
+                            navigateToAuthentication={this.navigateToAuthentication}
+                            toggleComments={this.toggleComments}
+                        />
+                        {this.renderDeleteModal()}
+                    </>
+                )}
+                {showComments && (
+                    <Comments toggleComments={this.toggleComments()} comments={comment.data} {...comment} />
+                )}
                 {this.renderError()}
             </Container>
         );

@@ -44,7 +44,7 @@ const PostFooter = styled.View`
 
 class Posts extends Component {
     renderPostFooter = (index, post, user) => {
-        const { isAuthenticated, handleLikeButtonClick, navigateToAuthentication } = this.props;
+        const { isAuthenticated, handleLikeButtonClick, navigateToAuthentication, toggleComments } = this.props;
         const { likes, comments } = post;
         const nlikes = likes.length;
         const ncomments = comments.length;
@@ -69,7 +69,9 @@ class Posts extends Component {
                     <View>{nlikes > 0 && <Subheading style={{ color: '#777777' }}>{nlikes}</Subheading>}</View>
                     <View>{ncomments > 0 && <Subheading style={{ color: '#777777' }}>{ncomments}</Subheading>}</View>
                 </View>
-                <Button color="#777777">Comment</Button>
+                <Button color="#777777" onPress={toggleComments(index)}>
+                    Comment
+                </Button>
             </PostFooter>
         );
     };
