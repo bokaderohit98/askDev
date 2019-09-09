@@ -12,5 +12,6 @@ export default {
     savePost: '/posts',
     likePost: _id => `/posts/like/${_id}`,
     unlikePost: _id => `/posts/unlike/${_id}`,
-    deletePost: _id => `/posts/${_id}`
+    deletePost: _id => `/posts/${_id}`,
+    postComment: _id => `/posts/comment/${_id}`
 };

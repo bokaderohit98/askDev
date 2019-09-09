@@ -51,7 +51,9 @@ class Feed extends Component {
                 message: ''
             },
             comment: {
-                data: [],
+                data: '',
+                comments: [],
+                index: -1,
                 value: '',
                 loading: false,
                 error: false,
@@ -65,6 +67,25 @@ class Feed extends Component {
     componentDidMount() {
         const { fetchPosts } = this.props;
         fetchPosts();
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        const { comment } = state;
+        const { index } = comment;
+        let { posts } = props;
+        posts = posts.posts;
+
+        if (index > -1 && posts && posts.length > 0) {
+            return {
+                ...state,
+                comment: {
+                    ...comment,
+                    comments: posts[index].comments
+                }
+            };
+        }
+
+        return state;
     }
 
     toggleDeleteModal = id => () => {
@@ -85,13 +106,21 @@ class Feed extends Component {
         const { comment, showComments } = this.state;
         posts = posts.posts;
 
-        let data = [];
-        if (index > -1) data = posts[index].comments;
+        let comments = [];
+        let data = '';
+        let idx = -1;
+        if (index > -1) {
+            data = posts[index]._id;
+            comments = posts[index].comments;
+            idx = index;
+        }
 
         this.setState({
             comment: {
                 ...comment,
                 data,
+                index: idx,
+                comments,
                 value: '',
                 error: false
             },
@@ -99,14 +128,26 @@ class Feed extends Component {
         });
     };
 
-    handleInputChange = value => {
-        this.setState({
-            post: {
-                value,
-                error: false,
-                message: ''
-            }
-        });
+    handleInputChange = type => value => {
+        const { post, comment } = this.state;
+        if (type === 'post')
+            this.setState({
+                post: {
+                    ...post,
+                    value,
+                    error: false,
+                    message: ''
+                }
+            });
+        else if (type === 'comment')
+            this.setState({
+                comment: {
+                    ...comment,
+                    value,
+                    error: false,
+                    message: ''
+                }
+            });
     };
 
     savePost = jwt => {
@@ -207,7 +248,6 @@ class Feed extends Component {
     };
 
     handleDeleteButtonClick = () => {
-        const { deletePost } = this.state;
         this.authService.makeSecureRequest(this.deletePost);
     };
 
@@ -244,13 +284,75 @@ class Feed extends Component {
         this.authService.makeSecureRequest(this.toggleLike(id, liked));
     };
 
+    postComment = jwt => {
+        const { user, fetchPosts } = this.props;
+        const { comment } = this.state;
+        const { value, data } = comment;
+        if (comment.value === '') {
+            this.setState({
+                comment: {
+                    ...comment,
+                    error: true,
+                    message: `Comments can't be empty`
+                }
+            });
+            return;
+        }
+
+        this.setState({
+            comment: {
+                ...comment,
+                loading: true
+            }
+        });
+
+        axios
+            .post(
+                routes.postComment(data),
+                {
+                    avatar: user.avatar,
+                    name: user.name,
+                    text: value
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                }
+            )
+            .then(res => {
+                fetchPosts();
+                this.setState({
+                    comment: {
+                        ...comment,
+                        loading: false,
+                        value: ''
+                    }
+                });
+            })
+            .catch(err => {
+                this.setState({
+                    comment: {
+                        ...comment,
+                        loading: false,
+                        error: true,
+                        message: 'Some error occurred'
+                    }
+                });
+            });
+    };
+
+    handleCommentButtonClick = () => {
+        this.authService.makeSecureRequest(this.postComment);
+    };
+
     navigateToAuthentication = () => {
         const { navigation } = this.props;
         navigation.replace('Authentication');
     };
 
     clearError = () => {
-        const { post, deletePost } = this.state;
+        const { post, deletePost, comment } = this.state;
         this.setState({
             post: {
                 ...post,
@@ -259,6 +361,11 @@ class Feed extends Component {
             },
             deletePost: {
                 ...deletePost,
+                error: false,
+                message: ''
+            },
+            comment: {
+                ...comment,
                 error: false,
                 message: ''
             }
@@ -290,14 +397,16 @@ class Feed extends Component {
     };
 
     renderError = () => {
-        const { post, deletePost } = this.state;
+        const { post, deletePost, comment } = this.state;
         const { error: postError, message: postErrorMessage } = post;
         const { error: deleteError, message: deleteErrorMessage } = deletePost;
-        const error = postError || deleteError;
+        const { error: commentError, message: commentErrorMessage } = comment;
+        const error = postError || deleteError || commentError;
         let message = '';
 
         if (postError) message = postErrorMessage;
         else if (deleteError) message = deleteErrorMessage;
+        else if (commentError) message = commentErrorMessage;
 
         return <Toast visible={error} color="#CC0000" message={message} onDismiss={this.clearError} />;
     };
@@ -312,7 +421,7 @@ class Feed extends Component {
                         <Create
                             user={user}
                             value={post.value}
-                            handleInputChange={this.handleInputChange}
+                            handleInputChange={this.handleInputChange('post')}
                             handlePostButtonClick={this.handlePostButtonClick}
                             loading={post.loading}
                             isAuthenticated={isAuthenticated}
@@ -333,10 +442,12 @@ class Feed extends Component {
                 {showComments && (
                     <Comments
                         toggleComments={this.toggleComments()}
-                        comments={comment.data}
+                        {...comment}
                         isAuthenticated={isAuthenticated}
                         navigateToAuthentication={this.navigateToAuthentication}
-                        {...comment}
+                        handleCommentButtonClick={this.handleCommentButtonClick}
+                        handleInputChange={this.handleInputChange('comment')}
+                        loading={comment.loading || posts.loading}
                     />
                 )}
                 {this.renderError()}

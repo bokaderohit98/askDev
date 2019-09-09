@@ -40,6 +40,7 @@ const CommentMeta = styled.View`
     display: flex;
     align-items: center;
     margin-right: 32px;
+    width: 50;
 `;
 
 const styles = StyleSheet.create({
@@ -83,7 +84,9 @@ class Comments extends Component {
                             <Avatar.Image source={{ uri: avatar }} size={32} />
                             <Paragraph>{name}</Paragraph>
                         </CommentMeta>
-                        <Subheading>{text}</Subheading>
+                        <View style={{ display: 'flex', flex: 1 }}>
+                            <Subheading>{text}</Subheading>
+                        </View>
                     </Comment>
                 );
             });
@@ -100,11 +103,19 @@ class Comments extends Component {
     };
 
     render() {
-        const { toggleComments, isAuthenticated, navigateToAuthentication } = this.props;
+        const {
+            toggleComments,
+            isAuthenticated,
+            navigateToAuthentication,
+            handleCommentButtonClick,
+            handleInputChange,
+            value,
+            loading
+        } = this.props;
         return (
             <Container>
                 <View style={styles.Close}>
-                    <IconButton icon="close" color="#777777" onPress={toggleComments} />
+                    <IconButton disabled={loading} icon="close" color="#777777" onPress={toggleComments} />
                 </View>
                 {this.renderComments()}
                 <AddCommentContainer>
@@ -115,10 +126,27 @@ class Comments extends Component {
                     )}
                     {isAuthenticated && (
                         <>
-                            <View style={styles.AddComment}>
-                                <TextInput palceholder="Add a comment.." style={styles.Input} />
-                            </View>
-                            <IconButton icon="send" size={24} color="#0000ff" />
+                            {!loading && (
+                                <>
+                                    <View style={styles.AddComment}>
+                                        <TextInput
+                                            disabled={loading}
+                                            placeholder="Add a comment.."
+                                            style={styles.Input}
+                                            value={value}
+                                            onChangeText={handleInputChange}
+                                        />
+                                    </View>
+                                    <IconButton
+                                        disabled={loading}
+                                        icon="send"
+                                        size={24}
+                                        color="#0000ff"
+                                        onPress={handleCommentButtonClick}
+                                    />
+                                </>
+                            )}
+                            {loading && <Button loading={loading} />}
                         </>
                     )}
                 </AddCommentContainer>
