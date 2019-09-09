@@ -305,7 +305,6 @@ class Feed extends Component {
     render() {
         const { posts, user, isAuthenticated } = this.props;
         const { post, showComments, comment } = this.state;
-        console.log('************************', comment);
         return (
             <Container>
                 {!showComments && (
@@ -332,7 +331,13 @@ class Feed extends Component {
                     </>
                 )}
                 {showComments && (
-                    <Comments toggleComments={this.toggleComments()} comments={comment.data} {...comment} />
+                    <Comments
+                        toggleComments={this.toggleComments()}
+                        comments={comment.data}
+                        isAuthenticated={isAuthenticated}
+                        navigateToAuthentication={this.navigateToAuthentication}
+                        {...comment}
+                    />
                 )}
                 {this.renderError()}
             </Container>

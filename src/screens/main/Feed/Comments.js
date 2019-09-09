@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { TextInput, Subheading, Avatar, IconButton, Paragraph, Title } from 'react-native-paper';
-import { TouchableWithoutFeedback, Keyboard, StyleSheet, Dimensions, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TextInput, Subheading, Avatar, IconButton, Paragraph, Button } from 'react-native-paper';
+import { StyleSheet, Dimensions, View } from 'react-native';
 
 const Container = styled.View`
     display: flex;
@@ -19,6 +18,7 @@ const CommentsContainer = styled.ScrollView`
 const AddCommentContainer = styled.View`
     display: flex;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
     height: 80px;
     border-top-color: #cccccc;
@@ -100,7 +100,7 @@ class Comments extends Component {
     };
 
     render() {
-        const { toggleComments } = this.props;
+        const { toggleComments, isAuthenticated, navigateToAuthentication } = this.props;
         return (
             <Container>
                 <View style={styles.Close}>
@@ -108,10 +108,19 @@ class Comments extends Component {
                 </View>
                 {this.renderComments()}
                 <AddCommentContainer>
-                    <View style={styles.AddComment}>
-                        <TextInput palceholder="Add a comment.." style={styles.Input} />
-                    </View>
-                    <IconButton icon="send" size={24} color="#0000ff" />
+                    {!isAuthenticated && (
+                        <Button mode="outlined" onPress={navigateToAuthentication}>
+                            Login to Comment
+                        </Button>
+                    )}
+                    {isAuthenticated && (
+                        <>
+                            <View style={styles.AddComment}>
+                                <TextInput palceholder="Add a comment.." style={styles.Input} />
+                            </View>
+                            <IconButton icon="send" size={24} color="#0000ff" />
+                        </>
+                    )}
                 </AddCommentContainer>
             </Container>
         );
