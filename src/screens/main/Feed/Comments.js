@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { TextInput, Subheading, Avatar, IconButton, Paragraph, Button } from 'react-native-paper';
+import { TextInput, Subheading, Avatar, IconButton, Paragraph, Button, Title } from 'react-native-paper';
 import { StyleSheet, Dimensions, View } from 'react-native';
 
 const Container = styled.View`
@@ -41,6 +41,20 @@ const CommentMeta = styled.View`
     align-items: center;
     margin-right: 32px;
     width: 50;
+`;
+
+const PostContainer = styled.View`
+    padding: 0 16px;
+    background-color: #fffff0;
+    margin-bottom: 16px;
+`;
+
+const PostHeader = styled.View`
+    display: flex;
+    padding: 8px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 const styles = StyleSheet.create({
@@ -103,6 +117,22 @@ class Comments extends Component {
         );
     };
 
+    renderPost = () => {
+        const { post } = this.props;
+        const { avatar, name, text } = post;
+        return (
+            <PostContainer>
+                <PostHeader>
+                    <View style={{ flex: 1, flexDirection: 'row', width: 60, alignItems: 'center' }}>
+                        <Avatar.Image src={{ uri: avatar }} size={54} style={{ marginRight: 16 }} />
+                        <Subheading>{name}</Subheading>
+                    </View>
+                </PostHeader>
+                <Title style={{ padding: 16, minHeight: 100 }}>{text}</Title>
+            </PostContainer>
+        );
+    };
+
     render() {
         const {
             toggleComments,
@@ -118,6 +148,7 @@ class Comments extends Component {
                 <View style={styles.Close}>
                     <IconButton disabled={loading} icon="close" color="#777777" onPress={toggleComments} />
                 </View>
+                {this.renderPost()}
                 {this.renderComments()}
                 <AddCommentContainer>
                     {!isAuthenticated && (

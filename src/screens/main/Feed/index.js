@@ -52,6 +52,7 @@ class Feed extends Component {
             },
             comment: {
                 data: '',
+                post: {},
                 comments: [],
                 index: -1,
                 value: '',
@@ -125,17 +126,20 @@ class Feed extends Component {
         posts = posts.posts;
 
         let comments = [];
+        let post = {};
         let data = '';
         let idx = -1;
         if (index > -1) {
-            data = posts[index]._id;
-            comments = posts[index].comments;
+            post = posts[index];
+            data = post._id;
+            comments = post.comments;
             idx = index;
         }
 
         this.setState({
             comment: {
                 ...comment,
+                post,
                 data,
                 index: idx,
                 comments,
