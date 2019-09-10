@@ -23,8 +23,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bokaderohit98.askDev"
     },
-    "description": ""
+    "android": {
+      "package": "com.bokaderohit98.askDev"
+    },
+    "description": "Get in touch with the developers community in no time."
   }
 }
