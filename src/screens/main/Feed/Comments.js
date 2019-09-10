@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { TextInput, Subheading, Avatar, IconButton, Paragraph, Button, Title } from 'react-native-paper';
-import { StyleSheet, Dimensions, View } from 'react-native';
+import { StyleSheet, Dimensions, View, KeyboardAvoidingView } from 'react-native';
 
 const Container = styled.View`
     display: flex;
@@ -82,6 +82,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    KeyboardAvoidingView: {
+        display: 'flex',
+        flex: 1
     }
 });
 
@@ -149,39 +153,41 @@ class Comments extends Component {
                     <IconButton disabled={loading} icon="close" color="#777777" onPress={toggleComments} />
                 </View>
                 {this.renderPost()}
-                {this.renderComments()}
-                <AddCommentContainer>
-                    {!isAuthenticated && (
-                        <Button mode="outlined" onPress={navigateToAuthentication}>
-                            Login to Comment
-                        </Button>
-                    )}
-                    {isAuthenticated && (
-                        <>
-                            {!loading && (
-                                <>
-                                    <View style={styles.AddComment}>
-                                        <TextInput
+                <KeyboardAvoidingView style={styles.KeyboardAvoidingView} behavior="padding">
+                    {this.renderComments()}
+                    <AddCommentContainer>
+                        {isAuthenticated && (
+                            <Button mode="outlined" onPress={navigateToAuthentication}>
+                                Login to Comment
+                            </Button>
+                        )}
+                        {isAuthenticated && (
+                            <>
+                                {!loading && (
+                                    <>
+                                        <View style={styles.AddComment}>
+                                            <TextInput
+                                                disabled={loading}
+                                                placeholder="Add a comment.."
+                                                style={styles.Input}
+                                                value={value}
+                                                onChangeText={handleInputChange}
+                                            />
+                                        </View>
+                                        <IconButton
                                             disabled={loading}
-                                            placeholder="Add a comment.."
-                                            style={styles.Input}
-                                            value={value}
-                                            onChangeText={handleInputChange}
+                                            icon="send"
+                                            size={24}
+                                            color="#0000ff"
+                                            onPress={handleCommentButtonClick}
                                         />
-                                    </View>
-                                    <IconButton
-                                        disabled={loading}
-                                        icon="send"
-                                        size={24}
-                                        color="#0000ff"
-                                        onPress={handleCommentButtonClick}
-                                    />
-                                </>
-                            )}
-                            {loading && <Button loading={loading} />}
-                        </>
-                    )}
-                </AddCommentContainer>
+                                    </>
+                                )}
+                                {loading && <Button loading={loading} />}
+                            </>
+                        )}
+                    </AddCommentContainer>
+                </KeyboardAvoidingView>
             </Container>
         );
     }
