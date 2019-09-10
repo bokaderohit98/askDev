@@ -156,7 +156,7 @@ class Comments extends Component {
                 <KeyboardAvoidingView style={styles.KeyboardAvoidingView} behavior="padding">
                     {this.renderComments()}
                     <AddCommentContainer>
-                        {isAuthenticated && (
+                        {!isAuthenticated && (
                             <Button mode="outlined" onPress={navigateToAuthentication}>
                                 Login to Comment
                             </Button>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BackHandler } from 'react-native';
-import { BottomNavigation, IconButton } from 'react-native-paper';
+import { BottomNavigation, IconButton, Colors } from 'react-native-paper';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import General from './General';
@@ -89,6 +89,12 @@ class Profile extends Component {
                 {Object.keys(profile).length === 0 && <Loading />}
                 {Object.keys(profile).length !== 0 && (
                     <BottomNavigation
+                        theme={{
+                            colors: {
+                                primary: '#ffffff'
+                            }
+                        }}
+                        activeColor="#0000ff"
                         navigationState={{ index, routes }}
                         onIndexChange={this.handleIndexChange}
                         renderScene={this.renderScene}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, ImageBackground, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Avatar, Subheading, Button, TouchableRipple } from 'react-native-paper';
 import { NavigationActions } from 'react-navigation';
 import styled from 'styled-components';
@@ -77,7 +77,7 @@ class Drawer extends Component {
         const navigationItems = this.routes.map(route => (
             <Button
                 key={route}
-                color="#000000"
+                color="#0000ff"
                 onPress={this.navigateToScreen(route)}
                 contentStyle={{
                     height: 60,
