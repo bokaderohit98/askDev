@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Dimensions, StyleSheet, Keyboard, TouchableWithoutFeedback, BackHandler } from 'react-native';
+import { Dimensions, StyleSheet, Keyboard, TouchableWithoutFeedback, BackHandler, View } from 'react-native';
 import styled from 'styled-components';
-import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
+import { IconButton, Button, Subheading, TextInput, Checkbox } from 'react-native-paper';
 import { connect } from 'react-redux';
 import Toast from '../../components/Toast';
 import { clearSuccess, clearError } from '../../redux/api';
@@ -52,6 +52,7 @@ class RegisterScreen extends Component {
         super(props);
         const { navigation } = props;
         this.state = {
+            showPassword: false,
             type: navigation.getParam('type', 'register'),
             formGroup: [
                 {
@@ -66,12 +67,14 @@ class RegisterScreen extends Component {
                     onChangeText: value => this.handleInputChange('email', value)
                 },
                 {
+                    type: 'password',
                     label: 'Password',
                     name: 'password',
                     login: true,
                     onChangeText: value => this.handleInputChange('password', value)
                 },
                 {
+                    type: 'password',
                     label: 'Confirm Password',
                     name: 'repeatedPassword',
                     onChangeText: value => this.handleInputChange('repeatedPassword', value)
@@ -212,8 +215,19 @@ class RegisterScreen extends Component {
         navigation.replace('Main');
     };
 
+    handleCheckboxClick = () => {
+        const { showPassword } = this.state;
+        this.setState({
+            showPassword: !showPassword
+        });
+    };
+
+    encodePassword = password => {
+        return '*'.repeat(password.length);
+    };
+
     renderFormGroup = disabled => {
-        const { formGroup, inputs, type } = this.state;
+        const { formGroup, inputs, type, showPassword } = this.state;
         const { width } = Dimensions.get('screen');
 
         const filteredFormGroup = formGroup.filter(item => type === 'register' || item.login);
@@ -223,6 +237,7 @@ class RegisterScreen extends Component {
         return filteredFormGroup.map((item, i) => (
             <TextInput
                 key={item.label}
+                secureTextEntry={item.type === 'password' && !showPassword}
                 label={item.label}
                 value={values[i]}
                 onChangeText={item.onChangeText}
@@ -279,7 +294,7 @@ class RegisterScreen extends Component {
     };
 
     render() {
-        const { type, registerUser } = this.state;
+        const { type, registerUser, showPassword } = this.state;
         const { loginUser } = this.props;
         const disabled = registerUser.loading || loginUser.loading;
         return (
@@ -291,6 +306,21 @@ class RegisterScreen extends Component {
                         </CloseContainer>
                         <FormContainer>
                             {this.renderFormGroup(disabled)}
+                            <View
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    marginBottom: 20,
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Subheading>Show Password</Subheading>
+                                <Checkbox
+                                    status={showPassword ? 'checked' : 'unchecked'}
+                                    onPress={this.handleCheckboxClick}
+                                    color="#0000ff"
+                                />
+                            </View>
                             <Button
                                 mode="outlined"
                                 onPress={this.handleFormSubmit}
