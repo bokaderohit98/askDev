@@ -13,22 +13,12 @@ const App = createStackNavigator(
             screen: CreateProfile
         },
         Main: {
-            screen: Main,
-            navigationOptions: {
-                headerStyle: {
-                    display: 'flex',
-                    backgroundColor: '#6200ea'
-                }
-            }
+            screen: Main
         }
     },
     {
         initialRouteName: 'Main',
-        defaultNavigationOptions: {
-            headerStyle: {
-                display: 'none'
-            }
-        }
+        headerMode: 'none'
     }
 );
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet, BackHandler } from 'react-native';
 import { Avatar, Card, IconButton, Title, Subheading, Chip } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { Error, Loading, Empty } from '../../../components';
@@ -11,11 +11,16 @@ const Container = styled.View`
     flex: 1;
 `;
 
+const Header = styled.View`
+    height: 40px;
+`;
+
 const MainContainer = styled.ScrollView`
     display: flex;
     flex: 1;
     background-color: #ffffff;
     padding: 12px;
+    padding-top: 40px;
 `;
 
 const SkillsContainer = styled.View`
@@ -53,6 +58,7 @@ class Developers extends Component {
     }
 
     componentDidMount() {
+        this.BackHandler = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
         const { fetchDevelopers } = this.props;
         fetchDevelopers();
     }
@@ -67,6 +73,12 @@ class Developers extends Component {
             profile
         };
     }
+
+    navigateBack = () => {
+        const { navigation } = this.props;
+        navigation.replace('Main');
+        return true;
+    };
 
     navigateToProfile = _id => () => {
         const { developers, profile } = this.state;
@@ -124,7 +136,10 @@ class Developers extends Component {
                 {!loading && error && <Error />}
                 {!loading && !error && developers && developers.length === 0 && <Empty>No Developers Present!</Empty>}
                 {!loading && !error && developers && developers.length > 0 && (
-                    <MainContainer>{this.renderDevelopers()}</MainContainer>
+                    <>
+                        <Header />
+                        <MainContainer>{this.renderDevelopers()}</MainContainer>
+                    </>
                 )}
             </Container>
         );

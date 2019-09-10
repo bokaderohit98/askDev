@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, BackHandler } from 'react-native';
 import { IconButton, Button } from 'react-native-paper';
 import styled from 'styled-components';
-import { NavigationActions } from 'react-navigation';
 import tabsSchema from './tabsSchema';
 import tabValidations from './tabValidations';
 import ActionContainer from './ActionContainer';
@@ -70,6 +69,8 @@ class CreateProfile extends Component {
         const { tabs: oldTabs } = this.state;
         const profile = navigation.getParam('profile', {});
         const type = navigation.getParam('type');
+
+        this.BackHandler = BackHandler.addEventListener('hardwareBackPress', this.closeScreen);
 
         if (type === 'edit') {
             const tabs = oldTabs.map(tab => {
@@ -190,7 +191,8 @@ class CreateProfile extends Component {
 
     closeScreen = () => {
         const { navigation } = this.props;
-        navigation.goBack();
+        if (navigation.getParam('type', 'create') === 'edit') navigation.goBack();
+        return true;
     };
 
     renderInitTab = () => {

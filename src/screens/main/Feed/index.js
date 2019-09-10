@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { Keyboard, StyleSheet, Dimensions } from 'react-native';
+import { Keyboard, StyleSheet, Dimensions, BackHandler } from 'react-native';
 import { Portal, Modal, Subheading, Button } from 'react-native-paper';
 import Create from './Create';
 import Posts from './Posts';
@@ -66,6 +66,7 @@ class Feed extends Component {
 
     componentDidMount() {
         const { fetchPosts } = this.props;
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
         fetchPosts();
     }
 
@@ -87,6 +88,23 @@ class Feed extends Component {
 
         return state;
     }
+
+    navigateBack = () => {
+        const { showComments, showDeleteModal } = this.state;
+        const { navigation } = this.props;
+        if (showComments) {
+            this.setState({
+                showComments: false
+            });
+        } else if (showDeleteModal) {
+            this.setState({
+                showDeleteModal: false
+            });
+        } else {
+            BackHandler.exitApp();
+        }
+        return true;
+    };
 
     toggleDeleteModal = id => () => {
         const { showDeleteModal, deletePost } = this.state;

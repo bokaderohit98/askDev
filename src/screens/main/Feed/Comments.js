@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        padding: 16
+        padding: 16,
+        paddingTop: 40
     },
     Center: {
         display: 'flex',

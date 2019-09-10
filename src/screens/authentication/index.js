@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Dimensions, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Dimensions, StyleSheet, Keyboard, TouchableWithoutFeedback, BackHandler } from 'react-native';
 import styled from 'styled-components';
 import { IconButton, Button, Subheading, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
@@ -97,6 +97,10 @@ class RegisterScreen extends Component {
         this.authService = new AuthService();
     }
 
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
+    }
+
     static getDerivedStateFromProps(props, state) {
         const { navigation, loginUser } = props;
         if (loginUser && !loginUser.loading && loginUser.isAuthenticated && loginUser.error)
@@ -105,6 +109,12 @@ class RegisterScreen extends Component {
             navigation.replace('Main');
         return state;
     }
+
+    navigateBack = () => {
+        const { navigation } = this.props;
+        navigation.replace('Main');
+        return true;
+    };
 
     handleInputChange = (field, value) => {
         const { inputs } = this.state;

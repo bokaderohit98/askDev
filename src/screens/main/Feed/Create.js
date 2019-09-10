@@ -9,6 +9,7 @@ const Container = styled.View`
     align-items: center;
     background: #ffffff;
     min-height: 100px;
+    padding-top: 80px;
 `;
 
 const PostContainer = styled.View`

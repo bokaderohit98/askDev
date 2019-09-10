@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
-import { BottomNavigation } from 'react-native-paper';
+import { BackHandler } from 'react-native';
+import { BottomNavigation, IconButton } from 'react-native-paper';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 import General from './General';
 import Specific from './Specific';
 import tabsSchema from './tabsSchema';
 import Loading from '../../../components/Loading';
+
+const Header = styled.View`
+    display: flex;
+    height: 80px;
+    flex-direction: row;
+    padding: 16px;
+`;
 
 class Profile extends Component {
     constructor(props) {
@@ -15,6 +24,10 @@ class Profile extends Component {
             tabs: tabsSchema,
             profile: {}
         };
+    }
+
+    componentDidMount() {
+        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.navigateBack);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -38,6 +51,12 @@ class Profile extends Component {
         const { profile } = this.state;
         const { navigation } = this.props;
         navigation.navigate('CreateProfile', { profile, type: 'edit' });
+    };
+
+    navigateBack = () => {
+        const { navigation } = this.props;
+        navigation.navigate('Developers');
+        return true;
     };
 
     renderScene = ({ route }) => {
@@ -64,6 +83,9 @@ class Profile extends Component {
         const { activeTabIndex: index, tabs: routes, profile } = this.state;
         return (
             <>
+                <Header>
+                    <IconButton icon="arrow-back" style={{ marginTop: 24 }} onPress={this.navigateBack} />
+                </Header>
                 {Object.keys(profile).length === 0 && <Loading />}
                 {Object.keys(profile).length !== 0 && (
                     <BottomNavigation
