@@ -1,6 +1,6 @@
 import { AsyncStorage } from 'react-native';
 import jwtDecode from 'jwt-decode';
-import store from '../redux/store';
+import { store } from '../redux/store';
 import { login } from '../redux/api';
 import * as actions from '../redux/actions';
 
