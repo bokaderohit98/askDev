@@ -6,7 +6,6 @@ const reducer = (state = {}, { type, payload }) => {
             return {
                 ...state,
                 loginLoading: true,
-                isAuthenticated: false,
                 loginError: false
             };
         case actions.LOGIN_USER_SUCCESS:
@@ -20,6 +19,7 @@ const reducer = (state = {}, { type, payload }) => {
                 ...state,
                 loginLoading: false,
                 loginError: true,
+                isAuthenticated: false,
                 profileLoading: false
             };
         case actions.FETCH_PROFILE_SUCCESS:

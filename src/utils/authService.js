@@ -41,7 +41,7 @@ class AuthService {
     makeSecureRequest = async request => {
         await this.validateToken();
         const jwt = await this.getToken();
-        return request(jwt);
+        request(jwt);
     };
 
     logout = () => {
