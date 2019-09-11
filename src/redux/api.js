@@ -68,7 +68,6 @@ export const fetchDevelopers = () => dispatch => {
 
 export const fetchPosts = isRefreshing => dispatch => {
     const action = isRefreshing ? actions.REFRESH_POSTS_BEGIN : actions.FETCH_POSTS_BEGIN;
-    console.log(action);
 
     dispatch({ type: action });
     axios
