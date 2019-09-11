@@ -53,20 +53,26 @@ const reducer = (state = {}, { type, payload }) => {
             return {
                 ...state,
                 postsLoading: true,
-                postsError: false,
-                posts: []
+                postsError: false
+            };
+        case actions.REFRESH_POSTS_BEGIN:
+            return {
+                ...state,
+                postsRefreshing: true,
+                postsError: false
             };
         case actions.FETCH_POSTS_SUCCESS:
             return {
                 ...state,
+                postsRefreshing: false,
                 postsLoading: false,
                 posts: payload.posts
             };
         case actions.FETCH_POSTS_ERROR:
             return {
                 ...state,
+                postsRefreshing: false,
                 postsLoading: false,
-                posts: [],
                 postsError: true,
                 postsErrorMessage: payload.message
             };

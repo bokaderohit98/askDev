@@ -92,7 +92,6 @@ class Feed extends Component {
 
     navigateBack = () => {
         const { showComments, showDeleteModal } = this.state;
-        const { navigation } = this.props;
         if (showComments) {
             this.setState({
                 showComments: false
@@ -368,6 +367,11 @@ class Feed extends Component {
         this.authService.makeSecureRequest(this.postComment);
     };
 
+    handlePostRefresh = () => {
+        const { fetchPosts } = this.props;
+        fetchPosts(true);
+    };
+
     navigateToAuthentication = () => {
         const { navigation } = this.props;
         navigation.replace('Authentication');
@@ -457,6 +461,7 @@ class Feed extends Component {
                             isAuthenticated={isAuthenticated}
                             navigateToAuthentication={this.navigateToAuthentication}
                             toggleComments={this.toggleComments}
+                            handlePostRefresh={this.handlePostRefresh}
                         />
                         {this.renderDeleteModal()}
                     </>
@@ -483,7 +488,8 @@ const mapStateToProps = state => ({
         posts: state.posts,
         loading: state.postsLoading,
         error: state.postsError,
-        message: state.postsErrorMessage
+        message: state.postsErrorMessage,
+        refreshing: state.postsRefreshing
     },
     user: state.user,
     isAuthenticated: state.isAuthenticated

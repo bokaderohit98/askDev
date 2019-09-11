@@ -66,8 +66,11 @@ export const fetchDevelopers = () => dispatch => {
         });
 };
 
-export const fetchPosts = () => dispatch => {
-    dispatch({ type: actions.FETCH_POSTS_BEGIN });
+export const fetchPosts = isRefreshing => dispatch => {
+    const action = isRefreshing ? actions.REFRESH_POSTS_BEGIN : actions.FETCH_POSTS_BEGIN;
+    console.log(action);
+
+    dispatch({ type: action });
     axios
         .get(routes.fetchPosts)
         .then(res => {

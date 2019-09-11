@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { View } from 'react-native';
+import { View, RefreshControl } from 'react-native';
 import { Avatar, Subheading, IconButton, Button } from 'react-native-paper';
 import { Loading, Error, Empty } from '../../../components';
 
@@ -99,7 +99,7 @@ class Posts extends Component {
     };
 
     render() {
-        const { loading, error, posts } = this.props;
+        const { loading, error, posts, handlePostRefresh, refreshing } = this.props;
         return (
             <>
                 {loading && (
@@ -117,7 +117,13 @@ class Posts extends Component {
                         <Empty>No posts found!</Empty>
                     </UtilContainer>
                 )}
-                {!loading && !error && posts && posts.length > 0 && <Container>{this.renderPosts()}</Container>}
+                {!loading && !error && posts && posts.length > 0 && (
+                    <Container
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handlePostRefresh} />}
+                    >
+                        {this.renderPosts()}
+                    </Container>
+                )}
             </>
         );
     }
